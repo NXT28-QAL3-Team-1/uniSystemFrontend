@@ -215,27 +215,29 @@ export default function GradesPage() {
     return (
         <DashboardLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                             إدارة الدرجات
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                             إدخال ونشر درجات الطلاب
                         </p>
                     </div>
                     {selectedSection && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                             <Button
                                 variant="outline"
                                 onClick={handleSaveGrades}
-                                disabled={loading}>
+                                disabled={loading}
+                                className="flex-1 sm:flex-none">
                                 <Save className="w-4 h-4 me-2" />
                                 حفظ
                             </Button>
                             <Button
                                 onClick={handlePublishGrades}
-                                disabled={loading}>
+                                disabled={loading}
+                                className="flex-1 sm:flex-none">
                                 <Send className="w-4 h-4 me-2" />
                                 نشر الدرجات
                             </Button>
@@ -244,7 +246,7 @@ export default function GradesPage() {
                 </div>
 
                 {/* Filters */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Card>
                         <CardHeader>
                             <CardTitle>الفصل الدراسي</CardTitle>
@@ -296,7 +298,7 @@ export default function GradesPage() {
                             <CardTitle>مكونات الدرجة</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <div className="grid grid-cols-4 gap-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                                 {gradeComponents.map((comp) => (
                                     <div
                                         key={comp.id}

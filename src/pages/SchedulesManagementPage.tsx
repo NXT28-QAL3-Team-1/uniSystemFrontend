@@ -111,19 +111,19 @@ export default function SchedulesManagementPage() {
     return (
         <DashboardLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                             إدارة المواعيد
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                             إضافة وإدارة مواعيد الشعب الدراسية
                         </p>
                     </div>
                 </div>
 
                 {/* Summary Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                     <Card>
                         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                             <CardTitle className="text-sm font-medium">
@@ -192,7 +192,7 @@ export default function SchedulesManagementPage() {
                             placeholder="ابحث عن شعبة أو مادة..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="max-w-md"
+                            className="w-full"
                         />
                     </CardContent>
                 </Card>
@@ -212,6 +212,7 @@ export default function SchedulesManagementPage() {
                                 لا توجد شعب
                             </div>
                         ) : (
+                            <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -328,13 +329,14 @@ export default function SchedulesManagementPage() {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
+                                                    className="text-xs sm:text-sm"
                                                     onClick={() => {
                                                         setSelectedSection(
                                                             section
                                                         );
                                                         setModalOpen(true);
                                                     }}>
-                                                    <Plus className="w-4 h-4 ml-1" />
+                                                    <Plus className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                                                     إضافة موعد
                                                 </Button>
                                             </TableCell>
@@ -342,6 +344,7 @@ export default function SchedulesManagementPage() {
                                     ))}
                                 </TableBody>
                             </Table>
+                            </div>
                         )}
                     </CardContent>
                 </Card>

@@ -324,21 +324,22 @@ export default function SettingsPage() {
 
     return (
         <DashboardLayout>
-            <div className="container mx-auto p-6 space-y-6" dir="rtl">
-                <div className="flex items-center justify-between">
+            <div className="container mx-auto p-4 sm:p-6 space-y-6" dir="rtl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold flex items-center gap-2">
-                            <Settings className="h-8 w-8" />
-                            إعدادات النظام
+                        <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
+                            <Settings className="h-6 w-6 sm:h-8 sm:w-8" />
+                            إعدادات النوظام
                         </h1>
-                        <p className="text-muted-foreground mt-2">
+                        <p className="text-sm sm:text-base text-muted-foreground mt-2">
                             إدارة إعدادات النظام والتفضيلات
                         </p>
                     </div>
                     <Button
                         onClick={handleSaveSettings}
                         disabled={isSaving}
-                        size="lg">
+                        size="lg"
+                        className="w-full sm:w-auto">
                         <Save className="h-4 w-4 ml-2" />
                         {isSaving ? "جاري الحفظ..." : "حفظ التغييرات"}
                     </Button>
@@ -361,29 +362,29 @@ export default function SettingsPage() {
                 )}
 
                 <Tabs defaultValue="general" className="space-y-6">
-                    <TabsList className="grid w-full grid-cols-6">
-                        <TabsTrigger value="general">
-                            <Globe className="h-4 w-4 ml-2" />
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2">
+                        <TabsTrigger value="general" className="text-xs sm:text-sm">
+                            <Globe className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                             عام
                         </TabsTrigger>
-                        <TabsTrigger value="academic">
-                            <Calendar className="h-4 w-4 ml-2" />
+                        <TabsTrigger value="academic" className="text-xs sm:text-sm">
+                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                             أكاديمي
                         </TabsTrigger>
-                        <TabsTrigger value="security">
-                            <Shield className="h-4 w-4 ml-2" />
+                        <TabsTrigger value="security" className="text-xs sm:text-sm">
+                            <Shield className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                             الأمان
                         </TabsTrigger>
-                        <TabsTrigger value="notifications">
-                            <Bell className="h-4 w-4 ml-2" />
+                        <TabsTrigger value="notifications" className="text-xs sm:text-sm">
+                            <Bell className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                             الإشعارات
                         </TabsTrigger>
-                        <TabsTrigger value="database">
-                            <Database className="h-4 w-4 ml-2" />
+                        <TabsTrigger value="database" className="text-xs sm:text-sm">
+                            <Database className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                             قاعدة البيانات
                         </TabsTrigger>
-                        <TabsTrigger value="system">
-                            <Settings className="h-4 w-4 ml-2" />
+                        <TabsTrigger value="system" className="text-xs sm:text-sm">
+                            <Settings className="h-3 w-3 sm:h-4 sm:w-4 ml-1 sm:ml-2" />
                             النظام
                         </TabsTrigger>
                     </TabsList>

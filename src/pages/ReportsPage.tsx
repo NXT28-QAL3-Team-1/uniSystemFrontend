@@ -257,14 +257,14 @@ export default function ReportsPage() {
     return (
         <DashboardLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                             {user?.role === "FACULTY" || user?.role === "TA"
                                 ? "تقارير المواد"
                                 : "التقارير والتحليلات"}
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                             {user?.role === "FACULTY" || user?.role === "TA"
                                 ? "تقارير وإحصائيات للمواد التي تدرسها"
                                 : "تقارير شاملة وتحليلات إحصائية للنظام الأكاديمي"}
@@ -272,14 +272,15 @@ export default function ReportsPage() {
                     </div>
                     {(user?.role === "ADMIN" ||
                         user?.role === "SUPER_ADMIN") && (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                             <Button
                                 variant="outline"
-                                onClick={handleExportExcel}>
+                                onClick={handleExportExcel}
+                                className="flex-1 sm:flex-none">
                                 <Download className="w-4 h-4 me-2" />
                                 Excel
                             </Button>
-                            <Button onClick={handleExportPDF}>
+                            <Button onClick={handleExportPDF} className="flex-1 sm:flex-none">
                                 <FileText className="w-4 h-4 me-2" />
                                 PDF
                             </Button>

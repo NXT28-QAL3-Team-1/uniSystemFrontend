@@ -245,16 +245,16 @@ export default function DepartmentApplicationsPage() {
             <div className="space-y-6">
                 {/* Header */}
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                         📋 طلبات اختيار التخصصات
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                         إدارة ومراجعة طلبات الطلاب لاختيار التخصصات
                     </p>
                 </div>
 
                 {/* Statistics Cards */}
-                <div className="grid gap-4 md:grid-cols-4">
+                <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                     <Card>
                         <CardContent className="p-6">
                             <div className="flex items-center justify-between">

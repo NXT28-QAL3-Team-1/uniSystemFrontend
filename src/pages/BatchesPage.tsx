@@ -89,12 +89,12 @@ export default function BatchesPage() {
     return (
         <DashboardLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                             {t("batches.title")}
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                             إدارة الدفعات الدراسية
                         </p>
                     </div>
@@ -102,7 +102,8 @@ export default function BatchesPage() {
                         onClick={() => {
                             setSelectedBatch(undefined);
                             setModalOpen(true);
-                        }}>
+                        }}
+                        className="w-full sm:w-auto">
                         <Plus className="w-4 h-4 me-2" />
                         {t("batches.create")}
                     </Button>
@@ -122,6 +123,7 @@ export default function BatchesPage() {
                                 {t("common.noData")}
                             </div>
                         ) : (
+                            <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -169,10 +171,11 @@ export default function BatchesPage() {
                                                 {batch.studentsCount || 0}
                                             </TableCell>
                                             <TableCell className="text-end">
-                                                <div className="flex items-center justify-end gap-2">
+                                                <div className="flex items-center justify-end gap-1 sm:gap-2">
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
                                                         onClick={() =>
                                                             handleViewStats(
                                                                 batch.id
@@ -183,6 +186,7 @@ export default function BatchesPage() {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
                                                         onClick={() => {
                                                             setSelectedBatch(
                                                                 batch
@@ -194,6 +198,7 @@ export default function BatchesPage() {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
                                                         onClick={() =>
                                                             handleDelete(
                                                                 batch.id
@@ -207,6 +212,7 @@ export default function BatchesPage() {
                                     ))}
                                 </TableBody>
                             </Table>
+                            </div>
                         )}
                     </CardContent>
                 </Card>

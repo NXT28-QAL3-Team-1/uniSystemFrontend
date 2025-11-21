@@ -61,18 +61,18 @@ export default function DashboardPage() {
         <DashboardLayout>
             <div className="space-y-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                         {t("dashboard.title")}
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 mt-1">
+                    <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                         مرحباً، {user?.email}
                     </p>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
+                    <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-1">
                         كلية علوم الحاسب - College of Computer Science
                     </p>
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
                     <Card>
                         <CardHeader>
                             <CardTitle className="text-sm font-medium text-gray-500 dark:text-gray-400">

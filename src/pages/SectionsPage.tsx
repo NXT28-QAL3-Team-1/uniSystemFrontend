@@ -129,12 +129,12 @@ export default function SectionsPage() {
     return (
         <DashboardLayout>
             <div className="space-y-6">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
                             {t("sections.title")}
                         </h1>
-                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mt-1">
                             إدارة الشعب الدراسية
                         </p>
                     </div>
@@ -142,7 +142,8 @@ export default function SectionsPage() {
                         onClick={() => {
                             setSelectedSection(undefined);
                             setModalOpen(true);
-                        }}>
+                        }}
+                        className="w-full sm:w-auto">
                         <Plus className="w-4 h-4 me-2" />
                         {t("sections.create")}
                     </Button>
@@ -157,7 +158,7 @@ export default function SectionsPage() {
                                 placeholder={t("common.search")}
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full md:w-96 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                             />
                         </div>
                     </CardHeader>
@@ -171,6 +172,7 @@ export default function SectionsPage() {
                                 {t("common.noData")}
                             </div>
                         ) : (
+                            <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
                                     <TableRow>
@@ -246,7 +248,7 @@ export default function SectionsPage() {
                                                 </Button>
                                             </TableCell>
                                             <TableCell className="text-end">
-                                                <div className="flex items-center justify-end gap-2">
+                                                <div className="flex items-center justify-end gap-1 sm:gap-2 flex-wrap">
                                                     <Button
                                                         variant="outline"
                                                         size="sm"
@@ -255,13 +257,14 @@ export default function SectionsPage() {
                                                                 `/sections/${section.id}/students`
                                                             )
                                                         }
-                                                        className="flex items-center gap-1">
-                                                        <Users className="w-4 h-4" />
+                                                        className="flex items-center gap-1 text-xs sm:text-sm">
+                                                        <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                                                         الطلاب
                                                     </Button>
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
                                                         onClick={() => {
                                                             setSelectedSection(
                                                                 section
@@ -273,6 +276,7 @@ export default function SectionsPage() {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
+                                                        className="h-8 w-8 sm:h-10 sm:w-10"
                                                         onClick={() =>
                                                             handleDelete(
                                                                 section.id
@@ -286,6 +290,7 @@ export default function SectionsPage() {
                                     ))}
                                 </TableBody>
                             </Table>
+                            </div>
                         )}
                     </CardContent>
                 </Card>
