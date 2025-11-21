@@ -1,0 +1,1002 @@
+import { useState, useEffect } from "react";
+import {
+    FileText,
+    Download,
+    TrendingUp,
+    Users,
+    GraduationCap,
+    BarChart3,
+} from "lucide-react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+    studentsService,
+    termsService,
+    gradesService,
+    reportsService,
+} from "@/services/api";
+import { useAuthStore } from "@/store/auth";
+import { useNavigate } from "react-router-dom";
+
+interface Student {
+    id: string;
+    studentCode: string;
+    nameAr: string;
+    specialization: { nameAr: string };
+    batch: { name: string };
+    currentGPA?: number;
+}
+
+interface Term {
+    id: string;
+    name: string;
+}
+
+interface Statistics {
+    totalStudents: number;
+    activeStudents: number;
+    graduatedStudents: number;
+    averageGPA: number;
+    enrollmentRate: number;
+    attendanceRate: number;
+    topSpecializations: {
+        name: string;
+        count: number;
+    }[];
+    gradeDistribution: {
+        grade: string;
+        count: number;
+        percentage: number;
+    }[];
+}
+
+export default function ReportsPage() {
+    const { user } = useAuthStore();
+    const navigate = useNavigate();
+    const [students, setStudents] = useState<Student[]>([]);
+    const [terms, setTerms] = useState<Term[]>([]);
+    const [selectedStudent, setSelectedStudent] = useState("");
+    const [selectedTerm, setSelectedTerm] = useState("");
+    const [reportType, setReportType] = useState<
+        "transcript" | "grades" | "attendance" | "statistics"
+    >("statistics");
+    const [studentTranscript, setStudentTranscript] = useState<any>(null);
+    const [loading, setLoading] = useState(false);
+    const [statistics, setStatistics] = useState<Statistics | null>(null);
+    const [loadingTranscript, setLoadingTranscript] = useState(false);
+    const [gradesReport, setGradesReport] = useState<any>(null);
+    const [attendanceReport, setAttendanceReport] = useState<any>(null);
+    const [loadingGrades, setLoadingGrades] = useState(false);
+    const [loadingAttendance, setLoadingAttendance] = useState(false);
+
+    useEffect(() => {
+        // Redirect student to their grades page
+        if (user?.role === "STUDENT") {
+            navigate("/student/grades");
+            return;
+        }
+
+        const fetchData = async () => {
+            try {
+                const [studentsRes, termsRes, statsRes] = await Promise.all([
+                    studentsService.getAll({}),
+                    termsService.getAll(),
+                    reportsService.getStatistics(),
+                ]);
+
+                console.log("📚 Students response:", studentsRes);
+                console.log("📅 Terms response:", termsRes);
+                console.log("📊 Stats response:", statsRes);
+
+                if (studentsRes.success) {
+                    // API returns students directly in data array, not data.students
+                    const studentsData = Array.isArray(studentsRes.data)
+                        ? studentsRes.data
+                        : studentsRes.data?.students || [];
+                    console.log("✅ Setting students:", studentsData);
+                    setStudents(studentsData);
+                }
+                if (termsRes.success) {
+                    const termsData = Array.isArray(termsRes.data)
+                        ? termsRes.data
+                        : termsRes.data?.terms || [];
+                    setTerms(termsData);
+                }
+                if (statsRes.success) {
+                    setStatistics(statsRes.data);
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+
+        if (user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") {
+            fetchData();
+        }
+    }, [user, navigate]);
+
+    const fetchTranscript = async (studentId: string) => {
+        try {
+            setLoadingTranscript(true);
+            const response = await reportsService.getTranscript(studentId);
+            if (response.success) {
+                setStudentTranscript(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching transcript:", error);
+            setStudentTranscript(null);
+        } finally {
+            setLoadingTranscript(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedStudent) {
+            fetchTranscript(selectedStudent);
+        } else {
+            setStudentTranscript(null);
+        }
+    }, [selectedStudent]);
+
+    const fetchGradesReport = async (termId: string) => {
+        try {
+            setLoadingGrades(true);
+            const response = await reportsService.getGradesReport(termId);
+            if (response.success) {
+                setGradesReport(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching grades report:", error);
+            setGradesReport(null);
+        } finally {
+            setLoadingGrades(false);
+        }
+    };
+
+    const fetchAttendanceReport = async (termId: string) => {
+        try {
+            setLoadingAttendance(true);
+            const response = await reportsService.getAttendanceReport(termId);
+            if (response.success) {
+                setAttendanceReport(response.data);
+            }
+        } catch (error) {
+            console.error("Error fetching attendance report:", error);
+            setAttendanceReport(null);
+        } finally {
+            setLoadingAttendance(false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedTerm && reportType === "grades") {
+            fetchGradesReport(selectedTerm);
+        } else if (selectedTerm && reportType === "attendance") {
+            fetchAttendanceReport(selectedTerm);
+        }
+    }, [selectedTerm, reportType]);
+
+    const handleExportPDF = () => {
+        alert("سيتم تصدير التقرير كملف PDF");
+    };
+
+    const handleExportExcel = () => {
+        alert("سيتم تصدير التقرير كملف Excel");
+    };
+
+    // Mock transcript data
+    const transcript = {
+        studentCode: "2021001",
+        nameAr: "أحمد محمد علي",
+        specialization: "علوم الحاسوب",
+        batch: "2021",
+        currentGPA: 3.75,
+        totalCredits: 90,
+        terms: [
+            {
+                name: "الفصل الأول 2021/2022",
+                gpa: 3.85,
+                courses: [
+                    {
+                        code: "CS101",
+                        name: "مقدمة في البرمجة",
+                        credits: 3,
+                        grade: "A",
+                        points: 4.0,
+                    },
+                    {
+                        code: "CS102",
+                        name: "الرياضيات المتقطعة",
+                        credits: 3,
+                        grade: "A",
+                        points: 4.0,
+                    },
+                    {
+                        code: "CS103",
+                        name: "مهارات الاتصال",
+                        credits: 2,
+                        grade: "B+",
+                        points: 3.5,
+                    },
+                ],
+            },
+            {
+                name: "الفصل الثاني 2021/2022",
+                gpa: 3.65,
+                courses: [
+                    {
+                        code: "CS201",
+                        name: "هياكل البيانات",
+                        credits: 3,
+                        grade: "A-",
+                        points: 3.7,
+                    },
+                    {
+                        code: "CS202",
+                        name: "قواعد البيانات",
+                        credits: 3,
+                        grade: "B+",
+                        points: 3.5,
+                    },
+                ],
+            },
+        ],
+    };
+
+    return (
+        <DashboardLayout>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                            {user?.role === "FACULTY" || user?.role === "TA"
+                                ? "تقارير المواد"
+                                : "التقارير والتحليلات"}
+                        </h1>
+                        <p className="text-gray-500 dark:text-gray-400 mt-1">
+                            {user?.role === "FACULTY" || user?.role === "TA"
+                                ? "تقارير وإحصائيات للمواد التي تدرسها"
+                                : "تقارير شاملة وتحليلات إحصائية للنظام الأكاديمي"}
+                        </p>
+                    </div>
+                    {(user?.role === "ADMIN" ||
+                        user?.role === "SUPER_ADMIN") && (
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={handleExportExcel}>
+                                <Download className="w-4 h-4 me-2" />
+                                Excel
+                            </Button>
+                            <Button onClick={handleExportPDF}>
+                                <FileText className="w-4 h-4 me-2" />
+                                PDF
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                {/* Faculty View */}
+                {(user?.role === "FACULTY" || user?.role === "TA") && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>المواد الخاصة بك</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-gray-500 text-center py-8">
+                                سيتم عرض المواد والأقسام التي تدرسها هنا
+                            </p>
+                            {/* TODO: Add faculty sections and grade reports */}
+                        </CardContent>
+                    </Card>
+                )}
+
+                {/* Admin View */}
+                {(user?.role === "ADMIN" || user?.role === "SUPER_ADMIN") && (
+                    <Tabs
+                        value={reportType}
+                        onValueChange={(v: string) =>
+                            setReportType(v as typeof reportType)
+                        }>
+                        <TabsList>
+                            <TabsTrigger value="statistics">
+                                <BarChart3 className="w-4 h-4 me-2" />
+                                الإحصائيات العامة
+                            </TabsTrigger>
+                            <TabsTrigger value="transcript">
+                                <FileText className="w-4 h-4 me-2" />
+                                كشف الدرجات
+                            </TabsTrigger>
+                            <TabsTrigger value="grades">
+                                <GraduationCap className="w-4 h-4 me-2" />
+                                تقرير الدرجات
+                            </TabsTrigger>
+                            <TabsTrigger value="attendance">
+                                <Users className="w-4 h-4 me-2" />
+                                تقرير الحضور
+                            </TabsTrigger>
+                        </TabsList>
+
+                        {/* Statistics Tab */}
+                        <TabsContent value="statistics" className="space-y-6">
+                            {!statistics ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        جاري تحميل الإحصائيات...
+                                    </p>
+                                </div>
+                            ) : (
+                                <>
+                                    <div className="grid grid-cols-4 gap-4">
+                                        <Card>
+                                            <CardContent className="pt-6">
+                                                <div className="flex items-center gap-3">
+                                                    <Users className="w-8 h-8 text-blue-600" />
+                                                    <div>
+                                                        <p className="text-2xl font-bold">
+                                                            {
+                                                                statistics.totalStudents
+                                                            }
+                                                        </p>
+                                                        <p className="text-sm text-gray-500">
+                                                            إجمالي الطلاب
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card>
+                                            <CardContent className="pt-6">
+                                                <div className="flex items-center gap-3">
+                                                    <GraduationCap className="w-8 h-8 text-green-600" />
+                                                    <div>
+                                                        <p className="text-2xl font-bold">
+                                                            {
+                                                                statistics.activeStudents
+                                                            }
+                                                        </p>
+                                                        <p className="text-sm text-gray-500">
+                                                            طلاب نشطون
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card>
+                                            <CardContent className="pt-6">
+                                                <div className="flex items-center gap-3">
+                                                    <TrendingUp className="w-8 h-8 text-purple-600" />
+                                                    <div>
+                                                        <p className="text-2xl font-bold">
+                                                            {statistics.averageGPA.toFixed(
+                                                                2
+                                                            )}
+                                                        </p>
+                                                        <p className="text-sm text-gray-500">
+                                                            المعدل العام
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card>
+                                            <CardContent className="pt-6">
+                                                <div className="flex items-center gap-3">
+                                                    <BarChart3 className="w-8 h-8 text-orange-600" />
+                                                    <div>
+                                                        <p className="text-2xl font-bold">
+                                                            {
+                                                                statistics.enrollmentRate
+                                                            }
+                                                            %
+                                                        </p>
+                                                        <p className="text-sm text-gray-500">
+                                                            نسبة التسجيل
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>
+                                                    التخصصات الأكثر طلباً
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-3">
+                                                    {statistics.topSpecializations.map(
+                                                        (spec, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex items-center justify-between">
+                                                                <span className="text-gray-700 dark:text-gray-300">
+                                                                    {spec.name}
+                                                                </span>
+                                                                <Badge variant="secondary">
+                                                                    {spec.count}{" "}
+                                                                    طالب
+                                                                </Badge>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+
+                                        <Card>
+                                            <CardHeader>
+                                                <CardTitle>
+                                                    توزيع الدرجات
+                                                </CardTitle>
+                                            </CardHeader>
+                                            <CardContent>
+                                                <div className="space-y-3">
+                                                    {statistics.gradeDistribution.map(
+                                                        (item, index) => (
+                                                            <div
+                                                                key={index}
+                                                                className="flex items-center gap-3">
+                                                                <span className="text-lg font-semibold w-8">
+                                                                    {item.grade}
+                                                                </span>
+                                                                <div className="flex-1">
+                                                                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                                                        <div
+                                                                            className="h-full bg-blue-600"
+                                                                            style={{
+                                                                                width: `${item.percentage}%`,
+                                                                            }}></div>
+                                                                    </div>
+                                                                </div>
+                                                                <span className="text-sm text-gray-600 dark:text-gray-400 w-16 text-end">
+                                                                    {item.count}{" "}
+                                                                    (
+                                                                    {
+                                                                        item.percentage
+                                                                    }
+                                                                    %)
+                                                                </span>
+                                                            </div>
+                                                        )
+                                                    )}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    </div>
+                                </>
+                            )}
+                        </TabsContent>
+
+                        {/* Transcript Tab */}
+                        <TabsContent value="transcript" className="space-y-6">
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle>اختيار الطالب</CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <select
+                                        value={selectedStudent}
+                                        onChange={(e) =>
+                                            setSelectedStudent(e.target.value)
+                                        }
+                                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                                        <option value="">اختر طالباً</option>
+                                        {students &&
+                                            students.map((student) => (
+                                                <option
+                                                    key={student.id}
+                                                    value={student.id}>
+                                                    {student.studentCode} -{" "}
+                                                    {student.nameAr}
+                                                </option>
+                                            ))}
+                                    </select>
+                                </CardContent>
+                            </Card>
+
+                            {loadingTranscript ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        جاري تحميل كشف الدرجات...
+                                    </p>
+                                </div>
+                            ) : studentTranscript ? (
+                                <>
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                معلومات الطالب
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <p className="text-sm text-gray-500">
+                                                        الرقم الجامعي
+                                                    </p>
+                                                    <p className="text-lg font-semibold">
+                                                        {
+                                                            studentTranscript.studentCode
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-gray-500">
+                                                        الاسم
+                                                    </p>
+                                                    <p className="text-lg font-semibold">
+                                                        {
+                                                            studentTranscript.nameAr
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-gray-500">
+                                                        التخصص
+                                                    </p>
+                                                    <p className="text-lg font-semibold">
+                                                        {
+                                                            studentTranscript.specialization
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-gray-500">
+                                                        الدفعة
+                                                    </p>
+                                                    <p className="text-lg font-semibold">
+                                                        {
+                                                            studentTranscript.batch
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-gray-500">
+                                                        المعدل التراكمي
+                                                    </p>
+                                                    <p className="text-lg font-semibold text-green-600">
+                                                        {studentTranscript.currentGPA.toFixed(
+                                                            2
+                                                        )}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <p className="text-sm text-gray-500">
+                                                        الساعات المنجزة
+                                                    </p>
+                                                    <p className="text-lg font-semibold">
+                                                        {
+                                                            studentTranscript.totalCredits
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    {studentTranscript.terms.map(
+                                        (term: any, termIndex: number) => (
+                                            <Card key={termIndex}>
+                                                <CardHeader>
+                                                    <div className="flex items-center justify-between">
+                                                        <CardTitle>
+                                                            {term.name}
+                                                        </CardTitle>
+                                                        <Badge>
+                                                            المعدل الفصلي:{" "}
+                                                            {term.gpa.toFixed(
+                                                                2
+                                                            )}
+                                                        </Badge>
+                                                    </div>
+                                                </CardHeader>
+                                                <CardContent>
+                                                    <Table>
+                                                        <TableHeader>
+                                                            <TableRow>
+                                                                <TableHead>
+                                                                    الرمز
+                                                                </TableHead>
+                                                                <TableHead>
+                                                                    اسم المقرر
+                                                                </TableHead>
+                                                                <TableHead>
+                                                                    الساعات
+                                                                </TableHead>
+                                                                <TableHead>
+                                                                    الدرجة
+                                                                </TableHead>
+                                                                <TableHead>
+                                                                    النقاط
+                                                                </TableHead>
+                                                            </TableRow>
+                                                        </TableHeader>
+                                                        <TableBody>
+                                                            {term.courses.map(
+                                                                (
+                                                                    course,
+                                                                    courseIndex
+                                                                ) => (
+                                                                    <TableRow
+                                                                        key={
+                                                                            courseIndex
+                                                                        }>
+                                                                        <TableCell>
+                                                                            {
+                                                                                course.code
+                                                                            }
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            {
+                                                                                course.name
+                                                                            }
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            {
+                                                                                course.credits
+                                                                            }
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            <Badge>
+                                                                                {
+                                                                                    course.grade
+                                                                                }
+                                                                            </Badge>
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            {course.points.toFixed(
+                                                                                1
+                                                                            )}
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                )
+                                                            )}
+                                                        </TableBody>
+                                                    </Table>
+                                                </CardContent>
+                                            </Card>
+                                        )
+                                    )}
+                                </>
+                            ) : selectedStudent ? (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-600 dark:text-gray-400">
+                                        لم يتم العثور على بيانات لهذا الطالب
+                                    </p>
+                                </div>
+                            ) : null}
+                        </TabsContent>
+
+                        {/* Grades Report Tab */}
+                        <TabsContent value="grades" className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>
+                                            اختيار الفصل الدراسي
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <select
+                                            value={selectedTerm}
+                                            onChange={(e) =>
+                                                setSelectedTerm(e.target.value)
+                                            }
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                                            <option value="">اختر الفصل</option>
+                                            {terms &&
+                                                terms.map((term) => (
+                                                    <option
+                                                        key={term.id}
+                                                        value={term.id}>
+                                                        {term.name}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            {selectedTerm && gradesReport ? (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>
+                                            تقرير الدرجات -{" "}
+                                            {gradesReport.termName}
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                معدل الفصل الدراسي:{" "}
+                                                <span className="font-bold text-lg">
+                                                    {gradesReport.averageGPA.toFixed(
+                                                        2
+                                                    )}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <Table>
+                                            <TableHeader>
+                                                <TableRow>
+                                                    <TableHead>
+                                                        الرقم الجامعي
+                                                    </TableHead>
+                                                    <TableHead>
+                                                        اسم الطالب
+                                                    </TableHead>
+                                                    <TableHead>
+                                                        عدد المقررات
+                                                    </TableHead>
+                                                    <TableHead>
+                                                        المعدل الفصلي
+                                                    </TableHead>
+                                                </TableRow>
+                                            </TableHeader>
+                                            <TableBody>
+                                                {gradesReport.students.map(
+                                                    (student: any) => (
+                                                        <TableRow
+                                                            key={
+                                                                student.studentCode
+                                                            }>
+                                                            <TableCell>
+                                                                {
+                                                                    student.studentCode
+                                                                }
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {student.nameAr}
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                {
+                                                                    student
+                                                                        .courses
+                                                                        .length
+                                                                }
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <Badge>
+                                                                    {student.termGPA
+                                                                        ? student.termGPA.toFixed(
+                                                                              2
+                                                                          )
+                                                                        : "غير محسوب"}
+                                                                </Badge>
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    )
+                                                )}
+                                            </TableBody>
+                                        </Table>
+                                    </CardContent>
+                                </Card>
+                            ) : selectedTerm && loadingGrades ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                                    <p className="mt-4 text-gray-600 dark:text-gray-400">
+                                        جاري تحميل تقرير الدرجات...
+                                    </p>
+                                </div>
+                            ) : selectedTerm ? (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>تقرير الدرجات</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-center text-gray-500 py-8">
+                                            لا توجد بيانات لهذا الفصل الدراسي
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            ) : null}
+                        </TabsContent>
+
+                        {/* Attendance Report Tab */}
+                        <TabsContent value="attendance" className="space-y-6">
+                            <div className="grid grid-cols-2 gap-4">
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>
+                                            اختيار الفصل الدراسي
+                                        </CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <select
+                                            value={selectedTerm}
+                                            onChange={(e) =>
+                                                setSelectedTerm(e.target.value)
+                                            }
+                                            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+                                            <option value="">اختر الفصل</option>
+                                            {terms &&
+                                                terms.map((term) => (
+                                                    <option
+                                                        key={term.id}
+                                                        value={term.id}>
+                                                        {term.name}
+                                                    </option>
+                                                ))}
+                                        </select>
+                                    </CardContent>
+                                </Card>
+                            </div>
+
+                            {selectedTerm && attendanceReport ? (
+                                <>
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                إحصائيات الحضور -{" "}
+                                                {attendanceReport.termName}
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <div className="grid grid-cols-3 gap-4">
+                                                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                                    <p className="text-sm text-gray-500 mb-1">
+                                                        معدل الحضور العام
+                                                    </p>
+                                                    <p className="text-3xl font-bold text-green-600">
+                                                        {attendanceReport.overallAttendanceRate.toFixed(
+                                                            1
+                                                        )}
+                                                        %
+                                                    </p>
+                                                </div>
+                                                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                                    <p className="text-sm text-gray-500 mb-1">
+                                                        طلاب بحضور منتظم
+                                                        (&gt;=75%)
+                                                    </p>
+                                                    <p className="text-3xl font-bold text-blue-600">
+                                                        {
+                                                            attendanceReport.regularStudents
+                                                        }
+                                                    </p>
+                                                </div>
+                                                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                                    <p className="text-sm text-gray-500 mb-1">
+                                                        طلاب بحضور ضعيف
+                                                        (&lt;75%)
+                                                    </p>
+                                                    <p className="text-3xl font-bold text-red-600">
+                                                        {
+                                                            attendanceReport.poorStudents
+                                                        }
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </CardContent>
+                                    </Card>
+
+                                    <Card>
+                                        <CardHeader>
+                                            <CardTitle>
+                                                تفاصيل حضور الطلاب
+                                            </CardTitle>
+                                        </CardHeader>
+                                        <CardContent>
+                                            <Table>
+                                                <TableHeader>
+                                                    <TableRow>
+                                                        <TableHead>
+                                                            الرقم الجامعي
+                                                        </TableHead>
+                                                        <TableHead>
+                                                            اسم الطالب
+                                                        </TableHead>
+                                                        <TableHead>
+                                                            إجمالي الجلسات
+                                                        </TableHead>
+                                                        <TableHead>
+                                                            الحضور
+                                                        </TableHead>
+                                                        <TableHead>
+                                                            الغياب
+                                                        </TableHead>
+                                                        <TableHead>
+                                                            النسبة
+                                                        </TableHead>
+                                                    </TableRow>
+                                                </TableHeader>
+                                                <TableBody>
+                                                    {attendanceReport.students.map(
+                                                        (student: any) => (
+                                                            <TableRow
+                                                                key={
+                                                                    student.studentCode
+                                                                }>
+                                                                <TableCell>
+                                                                    {
+                                                                        student.studentCode
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {
+                                                                        student.nameAr
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    {
+                                                                        student.totalSessions
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell className="text-green-600">
+                                                                    {
+                                                                        student.presentCount
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell className="text-red-600">
+                                                                    {
+                                                                        student.absentCount
+                                                                    }
+                                                                </TableCell>
+                                                                <TableCell>
+                                                                    <Badge
+                                                                        variant={
+                                                                            student.attendanceRate >=
+                                                                            75
+                                                                                ? "default"
+                                                                                : "destructive"
+                                                                        }>
+                                                                        {student.attendanceRate.toFixed(
+                                                                            1
+                                                                        )}
+                                                                        %
+                                                                    </Badge>
+                                                                </TableCell>
+                                                            </TableRow>
+                                                        )
+                                                    )}
+                                                </TableBody>
+                                            </Table>
+                                        </CardContent>
+                                    </Card>
+                                </>
+                            ) : selectedTerm && loadingAttendance ? (
+                                <div className="text-center py-12">
+                                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+                                    <p className="mt-4 text-gray-600 dark:text-gray-400">
+                                        جاري تحميل تقرير الحضور...
+                                    </p>
+                                </div>
+                            ) : selectedTerm ? (
+                                <Card>
+                                    <CardHeader>
+                                        <CardTitle>إحصائيات الحضور</CardTitle>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <p className="text-center text-gray-500 py-8">
+                                            لا توجد بيانات لهذا الفصل الدراسي
+                                        </p>
+                                    </CardContent>
+                                </Card>
+                            ) : null}
+                        </TabsContent>
+                    </Tabs>
+                )}
+            </div>
+        </DashboardLayout>
+    );
+}

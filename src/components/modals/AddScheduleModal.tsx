@@ -1,0 +1,227 @@
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogBody,
+    DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { sectionsService } from "@/services/api";
+
+const scheduleSchema = z
+    .object({
+        day: z.string().min(1, "اليوم مطلوب"),
+        startTime: z
+            .string()
+            .regex(
+                /^([01]\d|2[0-3]):([0-5]\d)$/,
+                "صيغة الوقت غير صحيحة (HH:MM)"
+            ),
+        endTime: z
+            .string()
+            .regex(
+                /^([01]\d|2[0-3]):([0-5]\d)$/,
+                "صيغة الوقت غير صحيحة (HH:MM)"
+            ),
+        room: z.string().optional(),
+    })
+    .refine((data) => data.startTime < data.endTime, {
+        message: "وقت البداية يجب أن يكون قبل وقت النهاية",
+        path: ["endTime"],
+    });
+
+type ScheduleFormData = z.infer<typeof scheduleSchema>;
+
+interface AddScheduleModalProps {
+    open: boolean;
+    onClose: () => void;
+    onSuccess: () => void;
+    section: {
+        id: string;
+        code: string;
+        course: {
+            code: string;
+            nameAr: string;
+        };
+    } | null;
+}
+
+const daysOptions = [
+    { value: "0", label: "الأحد" },
+    { value: "1", label: "الاثنين" },
+    { value: "2", label: "الثلاثاء" },
+    { value: "3", label: "الأربعاء" },
+    { value: "4", label: "الخميس" },
+    { value: "5", label: "الجمعة" },
+    { value: "6", label: "السبت" },
+];
+
+export default function AddScheduleModal({
+    open,
+    onClose,
+    onSuccess,
+    section,
+}: AddScheduleModalProps) {
+    const [loading, setLoading] = useState(false);
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        reset,
+        setValue,
+        watch,
+    } = useForm<ScheduleFormData>({
+        resolver: zodResolver(scheduleSchema),
+    });
+
+    const selectedDay = watch("day");
+
+    const onSubmit = async (data: ScheduleFormData) => {
+        if (!section) return;
+
+        try {
+            setLoading(true);
+            await sectionsService.addSchedule(section.id, {
+                day: parseInt(data.day),
+                startTime: data.startTime,
+                endTime: data.endTime,
+                room: data.room || undefined,
+            });
+            reset();
+            onSuccess();
+            onClose();
+        } catch (error) {
+            console.error("Error adding schedule:", error);
+            alert("فشل إضافة الموعد");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!section) return null;
+
+    return (
+        <Dialog open={open} onOpenChange={onClose}>
+            <DialogContent className="max-w-md">
+                <DialogHeader>
+                    <DialogTitle>إضافة موعد جديد</DialogTitle>
+                </DialogHeader>
+
+                <form onSubmit={handleSubmit(onSubmit)}>
+                    <DialogBody className="space-y-4">
+                        {/* Section Info */}
+                        <div className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
+                            <p className="text-sm text-muted-foreground">
+                                الشعبة
+                            </p>
+                            <p className="font-bold">{section.code}</p>
+                            <p className="text-sm">{section.course.nameAr}</p>
+                        </div>
+
+                        {/* Day */}
+                        <div>
+                            <Label htmlFor="day">اليوم *</Label>
+                            <Select
+                                value={selectedDay}
+                                onValueChange={(value) =>
+                                    setValue("day", value)
+                                }>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="اختر اليوم" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {daysOptions.map((day) => (
+                                        <SelectItem
+                                            key={day.value}
+                                            value={day.value}>
+                                            {day.label}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.day && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {errors.day.message}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Start Time */}
+                        <div>
+                            <Label htmlFor="startTime">وقت البداية *</Label>
+                            <Input
+                                id="startTime"
+                                type="time"
+                                {...register("startTime")}
+                                placeholder="08:00"
+                            />
+                            {errors.startTime && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {errors.startTime.message}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* End Time */}
+                        <div>
+                            <Label htmlFor="endTime">وقت النهاية *</Label>
+                            <Input
+                                id="endTime"
+                                type="time"
+                                {...register("endTime")}
+                                placeholder="10:00"
+                            />
+                            {errors.endTime && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {errors.endTime.message}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* Room */}
+                        <div>
+                            <Label htmlFor="room">القاعة (اختياري)</Label>
+                            <Input
+                                id="room"
+                                {...register("room")}
+                                placeholder="مثلاً: A101"
+                            />
+                            {errors.room && (
+                                <p className="text-sm text-red-600 mt-1">
+                                    {errors.room.message}
+                                </p>
+                            )}
+                        </div>
+                    </DialogBody>
+
+                    <DialogFooter>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={onClose}
+                            disabled={loading}>
+                            إلغاء
+                        </Button>
+                        <Button type="submit" disabled={loading}>
+                            {loading ? "جاري الحفظ..." : "حفظ"}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
+    );
+}
