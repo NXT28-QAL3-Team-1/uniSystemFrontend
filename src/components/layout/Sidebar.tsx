@@ -185,29 +185,32 @@ export default function Sidebar() {
             {/* Mobile Menu Button */}
             <button
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden fixed top-4 start-4 z-50 p-2.5 rounded-lg bg-gray-800 dark:bg-gray-900 border border-gray-700 dark:border-gray-800 shadow-lg hover:bg-gray-700 transition-colors"
-                aria-label="Toggle menu">
+                className="lg:hidden fixed top-4 right-4 z-50 p-2.5 rounded-lg bg-gray-800 dark:bg-gray-900 border border-gray-700 dark:border-gray-800 shadow-lg hover:bg-gray-700 transition-all duration-300"
+                aria-label="Toggle menu"
+                style={{ insetInlineEnd: '1rem', insetInlineStart: 'auto' }}>
                 {isMobileMenuOpen ? (
-                    <X className="w-6 h-6 text-white" />
+                    <X className="w-5 h-5 text-white" />
                 ) : (
-                    <Menu className="w-6 h-6 text-white" />
+                    <Menu className="w-5 h-5 text-white" />
                 )}
             </button>
 
             {/* Overlay for mobile */}
             {isMobileMenuOpen && (
                 <div
-                    className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+                    className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
                     onClick={() => setIsMobileMenuOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 start-0 z-50 w-64 bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 border-e border-gray-700 dark:border-gray-800 transition-transform duration-300 lg:translate-x-0 shadow-xl ${
-                    isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed inset-y-0 right-0 z-50 w-64 bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 border-l border-gray-700 dark:border-gray-800 transition-transform duration-300 ease-in-out shadow-xl ${
+                    isMobileMenuOpen
+                        ? "translate-x-0"
+                        : "translate-x-full lg:translate-x-0"
                 }`}
-                dir="rtl">
+                style={{ insetInlineEnd: '0' }}>
                 {/* Logo */}
                 <div className="flex items-center justify-center h-16 border-b border-gray-700 dark:border-gray-800 bg-gray-800/50 dark:bg-gray-900/50">
                     <h1 className="text-2xl font-bold text-blue-400 dark:text-blue-300">
@@ -216,7 +219,7 @@ export default function Sidebar() {
                 </div>
 
                 {/* Navigation */}
-                <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-500">
                     {filteredNavItems.map((item) => {
                         const isActive = location.pathname === item.path;
                         const Icon = item.icon;
@@ -226,13 +229,15 @@ export default function Sidebar() {
                                 key={item.path}
                                 to={item.path}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 group ${
+                                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group min-h-11 ${
                                     isActive
-                                        ? "bg-blue-600 dark:bg-blue-700 text-white shadow-md"
-                                        : "text-gray-300 dark:text-gray-400 hover:bg-gray-700/50 dark:hover:bg-gray-800/50 hover:text-white"
+                                        ? "bg-blue-600 dark:bg-blue-700 text-white shadow-md shadow-blue-900/20"
+                                        : "text-gray-300 dark:text-gray-400 hover:bg-gray-700/50 dark:hover:bg-gray-800/50 hover:text-white active:bg-gray-700"
                                 }`}>
-                                <Icon className={`w-5 h-5 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-400'}`} />
-                                <span className="font-medium text-sm whitespace-nowrap">{item.label}</span>
+                                <Icon className={`w-5 h-5 shrink-0 transition-colors ${
+                                    isActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-400'
+                                }`} />
+                                <span className="font-medium text-sm leading-tight">{item.label}</span>
                             </Link>
                         );
                     })}

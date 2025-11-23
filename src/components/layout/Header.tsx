@@ -30,8 +30,12 @@ export default function Header() {
     };
 
     return (
-        <header className="fixed top-0 end-0 start-0 lg:start-64 z-40 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-all duration-300">
-            <div className="flex items-center justify-between h-full px-4 sm:px-6">
+        <header 
+            className="fixed top-0 left-0 right-0 z-30 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300"
+            style={{ insetInlineStart: '0', insetInlineEnd: '0' }}>
+            <div 
+                className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-6 transition-all duration-300"
+                style={{ marginInlineEnd: 'var(--sidebar-offset, 0)' }}>
                 {/* User Info */}
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                     <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
