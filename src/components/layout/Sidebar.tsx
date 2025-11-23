@@ -19,8 +19,6 @@ import {
     FolderOpen,
     School,
     Clock,
-    Menu,
-    X,
 } from "lucide-react";
 
 interface NavItem {
@@ -30,11 +28,15 @@ interface NavItem {
     roles?: string[]; // Optional: which roles can see this item
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+    isMobileMenuOpen: boolean;
+    setIsMobileMenuOpen: (open: boolean) => void;
+}
+
+export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: SidebarProps) {
     const { t } = useTranslation();
     const location = useLocation();
     const { user } = useAuthStore();
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const navItems: NavItem[] = [
         {
@@ -182,19 +184,6 @@ export default function Sidebar() {
 
     return (
         <>
-            {/* Mobile Menu Button */}
-            <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="lg:hidden fixed top-4 right-4 z-50 p-2.5 rounded-lg bg-gray-800 dark:bg-gray-900 border border-gray-700 dark:border-gray-800 shadow-lg hover:bg-gray-700 transition-all duration-300"
-                aria-label="Toggle menu"
-                style={{ insetInlineEnd: '1rem', insetInlineStart: 'auto' }}>
-                {isMobileMenuOpen ? (
-                    <X className="w-5 h-5 text-white" />
-                ) : (
-                    <Menu className="w-5 h-5 text-white" />
-                )}
-            </button>
-
             {/* Overlay for mobile */}
             {isMobileMenuOpen && (
                 <div
@@ -205,7 +194,7 @@ export default function Sidebar() {
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 right-0 z-50 w-64 bg-gradient-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 border-l border-gray-700 dark:border-gray-800 transition-transform duration-300 ease-in-out shadow-xl ${
+                className={`fixed inset-y-0 right-0 z-50 w-64 bg-linear-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 border-l border-gray-700 dark:border-gray-800 transition-transform duration-300 ease-in-out shadow-xl ${
                     isMobileMenuOpen
                         ? "translate-x-0"
                         : "translate-x-full lg:translate-x-0"

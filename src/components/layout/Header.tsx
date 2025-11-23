@@ -1,12 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Moon, Sun, Globe, LogOut, User } from "lucide-react";
+import { Moon, Sun, Globe, LogOut, User, Menu, X } from "lucide-react";
 import { useAuthStore } from "@/store/auth";
 import { useThemeStore } from "@/store/theme";
 import { Button } from "@/components/ui/button";
 import { authService } from "@/services/api";
 
-export default function Header() {
+interface HeaderProps {
+    isMobileMenuOpen: boolean;
+    setIsMobileMenuOpen: (open: boolean) => void;
+}
+
+export default function Header({ isMobileMenuOpen, setIsMobileMenuOpen }: HeaderProps) {
     const { t, i18n } = useTranslation();
     const navigate = useNavigate();
     const { user, logout } = useAuthStore();
@@ -31,14 +36,12 @@ export default function Header() {
 
     return (
         <header 
-            className="fixed top-0 left-0 right-0 z-30 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300"
-            style={{ insetInlineStart: '0', insetInlineEnd: '0' }}>
+            className="fixed top-0 left-0 right-0 lg:right-64 z-30 h-16 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm transition-all duration-300">
             <div 
-                className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-6 transition-all duration-300"
-                style={{ marginInlineEnd: 'var(--sidebar-offset, 0)' }}>
+                className="flex items-center justify-between h-full px-4 sm:px-6 lg:px-6 transition-all duration-300">
                 {/* User Info */}
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center flex-shrink-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center shrink-0">
                         <User className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="min-w-0">
@@ -52,7 +55,21 @@ export default function Header() {
                 </div>
 
                 {/* Actions */}
-                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                    {/* Mobile Menu Toggle */}
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        className="lg:hidden h-8 w-8 sm:h-10 sm:w-10"
+                        title={isMobileMenuOpen ? "Close menu" : "Open menu"}>
+                        {isMobileMenuOpen ? (
+                            <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                        ) : (
+                            <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
+                        )}
+                    </Button>
+
                     {/* Language Toggle */}
                     <Button
                         variant="ghost"
