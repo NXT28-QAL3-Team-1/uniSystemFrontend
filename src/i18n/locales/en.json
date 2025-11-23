@@ -48,6 +48,26 @@
         "Payments": "Payments"
 
     },
+
+     "reports": {
+        "title": " Reports",
+        "General Statistics": " General Statistics",
+        "Grade sheet": "Grade Sheet",
+        "Grade report": "Grade Report",
+        "attendance report": "Attendance Report",
+        "Total students": "Total Students",
+        "Active students": "Active Students",
+        "Overall GPA": "Overall GPA",
+        "Enrollment Rate": "Enrollment Rate",
+        "Grade Distribution": "Grade Distribution",
+        "Most Requested Specializations": "Most Requested Specializations",  
+        "Student Selection": "Student Selection",
+        "Select a Student": "Select a Student",
+        "Semester Selection": "Semester Selection",
+        "Select a Semester": "Select a Semester"
+        
+    },
+    
     "colleges": {
         "title": "Colleges",
         "create": "Create New College",

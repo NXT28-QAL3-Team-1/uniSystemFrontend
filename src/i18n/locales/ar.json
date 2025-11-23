@@ -46,6 +46,25 @@
         "subjects": "المواد",
         "Payments": "الدفعات"
     },
+
+     "reports": {
+        "title": " التقارير",
+        "General Statistics": " الاحصائيات العامه",
+        "Grade sheet": "كشف الدرجات",
+        "Grade report": "تقرير الدرجات",
+        "attendance report": "تقرير الحضور ",
+        "Total students": "اجمالي الطلاب",
+        "Active students": "طلاب نشطون",
+        "Overall GPA": "المعدل  العام",
+        "Enrollment Rate": "نسبه التسجيل",
+        "Grade Distribution": "توزيع الدرجات",
+        "Most Requested Specializations": "التخصصات الاكثر طلبا",
+        "Student Selection": "اختيار الطالب",
+        "Select a Student": "اختر طالبًا",
+        "Semester Selection": "اختيار الفصل الدراسي",
+        "Select a Semester": "اختر فصلًا دراسيًا"
+        
+    },
     "colleges": {
         "title": "الكليات",
         "create": "إنشاء كلية جديدة",
