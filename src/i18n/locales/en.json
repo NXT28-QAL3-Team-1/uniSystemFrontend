@@ -40,7 +40,13 @@
     "dashboard": {
         "title": "Dashboard",
         "overview": "Overview",
-        "statistics": "Statistics"
+        "statistics": "Statistics",
+        "Departments": "Departments",
+        "Students": "Students",
+        "All Terms": "All Terms",
+        "subjects": "Subjects",
+        "Payments": "Payments"
+
     },
     "colleges": {
         "title": "Colleges",
@@ -131,6 +137,7 @@
         "nameEn": "English Name",
         "nameAr": "Arabic Name",
         "email": "Email",
+        "department": "Department",
         "phone": "Phone",
         "batch": "Batch",
         "specialization": "Specialization",

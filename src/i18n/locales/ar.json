@@ -40,7 +40,11 @@
     "dashboard": {
         "title": "لوحة التحكم",
         "overview": "نظرة عامة",
-        "statistics": "الإحصائيات"
+        "statistics": "الإحصائيات",
+        "Students": "الطلاب",
+        "All Terms": "جميع الفصول",
+        "subjects": "المواد",
+        "Payments": "الدفعات"
     },
     "colleges": {
         "title": "الكليات",
@@ -131,6 +135,7 @@
         "nameEn": "الاسم بالإنجليزية",
         "nameAr": "الاسم بالعربية",
         "email": "البريد الإلكتروني",
+        "department": "القسم",
         "phone": "رقم الهاتف",
         "batch": "الدفعة",
         "specialization": "التخصص",
