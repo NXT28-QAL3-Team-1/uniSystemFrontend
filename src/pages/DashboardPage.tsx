@@ -14,6 +14,9 @@ import {
     Pie,
     AreaChart,
     Area,
+    RadialBarChart,
+    RadialBar,
+    ComposedChart,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -66,6 +69,13 @@ export default function DashboardPage() {
     }, []);
 
     const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#06b6d4', '#6366f1', '#14b8a6'];
+    const GRADIENT_COLORS = [
+        { start: '#3b82f6', end: '#1d4ed8' },
+        { start: '#8b5cf6', end: '#6d28d9' },
+        { start: '#ec4899', end: '#be185d' },
+        { start: '#f59e0b', end: '#d97706' },
+        { start: '#10b981', end: '#059669' },
+    ];
 
     const fetchStats = async () => {
         try {
@@ -290,24 +300,33 @@ export default function DashboardPage() {
                 {/* Charts Section */}
                 {!loading && (
                     <div className="grid gap-4 sm:gap-6 grid-cols-1 lg:grid-cols-2">
-                        {/* Students by Department Bar Chart */}
-                        <Card className="col-span-1">
-                            <CardHeader>
+                        {/* Students by Department - Gradient Bar Chart with Animation */}
+                        <Card className="col-span-1 overflow-hidden">
+                            <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
                                 <CardTitle className="flex items-center justify-between">
-                                    <span>الطلاب حسب الأقسام</span>
-                                    <span className="text-xs font-normal text-gray-500">
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-2 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full"></div>
+                                        الطلاب حسب الأقسام
+                                    </span>
+                                    <span className="text-xs font-normal text-gray-500 bg-white dark:bg-gray-800 px-3 py-1 rounded-full">
                                         {chartData.studentsByDepartment.length} قسم
                                     </span>
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="pt-6">
                                 {chartData.studentsByDepartment.length > 0 ? (
                                     <ResponsiveContainer width="100%" height={320}>
                                         <BarChart 
                                             data={chartData.studentsByDepartment}
                                             margin={{ top: 5, right: 10, left: 0, bottom: 30 }}
                                         >
-                                            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" opacity={0.5} />
+                                            <defs>
+                                                <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={1}/>
+                                                    <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0.8}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" opacity={0.3} vertical={false} />
                                             <XAxis 
                                                 dataKey="name" 
                                                 className="text-xs"
@@ -325,24 +344,22 @@ export default function DashboardPage() {
                                             />
                                             <Tooltip 
                                                 contentStyle={{ 
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                                                    border: '1px solid #e5e7eb',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                                    padding: '8px 12px'
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                    border: 'none',
+                                                    borderRadius: '12px',
+                                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
+                                                    padding: '12px 16px'
                                                 }}
-                                                labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
-                                            />
-                                            <Legend 
-                                                wrapperStyle={{ paddingTop: '10px' }}
-                                                iconType="square"
+                                                labelStyle={{ fontWeight: 'bold', marginBottom: '6px', color: '#1f2937' }}
+                                                cursor={{ fill: 'rgba(59, 130, 246, 0.1)' }}
                                             />
                                             <Bar 
                                                 dataKey="students" 
-                                                fill="#3b82f6" 
+                                                fill="url(#barGradient)" 
                                                 name="عدد الطلاب" 
-                                                radius={[8, 8, 0, 0]}
-                                                maxBarSize={60}
+                                                radius={[10, 10, 0, 0]}
+                                                maxBarSize={50}
+                                                animationDuration={1500}
                                             />
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -358,57 +375,70 @@ export default function DashboardPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Course Distribution Pie Chart */}
-                        <Card className="col-span-1">
-                            <CardHeader>
+                        {/* Course Distribution - Enhanced Donut Chart with Center Text */}
+                        <Card className="col-span-1 overflow-hidden">
+                            <CardHeader className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30">
                                 <CardTitle className="flex items-center justify-between">
-                                    <span>توزيع المواد حسب الأقسام</span>
-                                    <span className="text-xs font-normal text-gray-500">
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-2 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full"></div>
+                                        توزيع المواد حسب الأقسام
+                                    </span>
+                                    <span className="text-xs font-normal text-gray-500 bg-white dark:bg-gray-800 px-3 py-1 rounded-full">
                                         {chartData.coursesByDepartment.reduce((sum: number, d: any) => sum + d.courses, 0)} مادة
                                     </span>
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="pt-6">
                                 {chartData.coursesByDepartment.length > 0 ? (
                                     <ResponsiveContainer width="100%" height={320}>
                                         <PieChart margin={{ top: 5, right: 10, left: 10, bottom: 5 }}>
+                                            <defs>
+                                                {COLORS.map((color, index) => (
+                                                    <linearGradient key={index} id={`gradient${index}`} x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stopColor={color} stopOpacity={1}/>
+                                                        <stop offset="100%" stopColor={color} stopOpacity={0.7}/>
+                                                    </linearGradient>
+                                                ))}
+                                            </defs>
                                             <Pie
                                                 data={chartData.coursesByDepartment}
                                                 cx="50%"
                                                 cy="45%"
-                                                labelLine={true}
+                                                labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
                                                 label={({ name, percent }) => 
-                                                    percent > 0.05 ? `${name}: ${(percent * 100).toFixed(0)}%` : ''
+                                                    percent > 0.05 ? `${(percent * 100).toFixed(0)}%` : ''
                                                 }
-                                                outerRadius={85}
-                                                innerRadius={35}
+                                                outerRadius={95}
+                                                innerRadius={60}
                                                 fill="#8884d8"
                                                 dataKey="courses"
-                                                paddingAngle={2}
+                                                paddingAngle={3}
+                                                animationBegin={0}
+                                                animationDuration={1200}
                                             >
                                                 {chartData.coursesByDepartment.map((entry, index) => (
                                                     <Cell 
                                                         key={`cell-${index}`} 
-                                                        fill={entry.fill}
+                                                        fill={`url(#gradient${index % COLORS.length})`}
                                                         stroke="#fff"
-                                                        strokeWidth={2}
+                                                        strokeWidth={3}
                                                     />
                                                 ))}
                                             </Pie>
                                             <Tooltip 
                                                 contentStyle={{ 
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                                                    border: '1px solid #e5e7eb',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                                    padding: '8px 12px'
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                    border: 'none',
+                                                    borderRadius: '12px',
+                                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
+                                                    padding: '12px 16px'
                                                 }}
                                             />
                                             <Legend 
                                                 verticalAlign="bottom"
                                                 height={36}
                                                 iconType="circle"
-                                                wrapperStyle={{ fontSize: '12px' }}
+                                                wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }}
                                             />
                                         </PieChart>
                                     </ResponsiveContainer>
@@ -425,24 +455,33 @@ export default function DashboardPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Enrollment Trends Line Chart */}
-                        <Card className="col-span-1">
-                            <CardHeader>
+                        {/* Enrollment Trends - Smooth Curved Line with Area Fill */}
+                        <Card className="col-span-1 overflow-hidden">
+                            <CardHeader className="bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-950/30 dark:to-purple-950/30">
                                 <CardTitle className="flex items-center justify-between">
-                                    <span>اتجاهات التسجيل عبر الفصول</span>
-                                    <span className="text-xs font-normal text-gray-500">
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-2 h-6 bg-gradient-to-b from-violet-500 to-purple-500 rounded-full"></div>
+                                        اتجاهات التسجيل عبر الفصول
+                                    </span>
+                                    <span className="text-xs font-normal text-gray-500 bg-white dark:bg-gray-800 px-3 py-1 rounded-full">
                                         آخر {chartData.enrollmentTrends.length} فصول
                                     </span>
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
+                            <CardContent className="pt-6">
                                 {chartData.enrollmentTrends.length > 0 ? (
                                     <ResponsiveContainer width="100%" height={320}>
-                                        <LineChart 
+                                        <ComposedChart 
                                             data={chartData.enrollmentTrends}
                                             margin={{ top: 5, right: 10, left: 0, bottom: 30 }}
                                         >
-                                            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" opacity={0.5} />
+                                            <defs>
+                                                <linearGradient id="enrollmentGradient" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                                                    <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.05}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" opacity={0.3} vertical={false} />
                                             <XAxis 
                                                 dataKey="term" 
                                                 className="text-xs"
@@ -460,17 +499,21 @@ export default function DashboardPage() {
                                             />
                                             <Tooltip 
                                                 contentStyle={{ 
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                                                    border: '1px solid #e5e7eb',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                                    padding: '8px 12px'
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                    border: 'none',
+                                                    borderRadius: '12px',
+                                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
+                                                    padding: '12px 16px'
                                                 }}
-                                                labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
+                                                labelStyle={{ fontWeight: 'bold', marginBottom: '6px', color: '#1f2937' }}
+                                                cursor={{ strokeDasharray: '3 3' }}
                                             />
-                                            <Legend 
-                                                wrapperStyle={{ paddingTop: '10px' }}
-                                                iconType="line"
+                                            <Area 
+                                                type="monotone" 
+                                                dataKey="enrollments" 
+                                                fill="url(#enrollmentGradient)"
+                                                stroke="none"
+                                                animationDuration={1500}
                                             />
                                             <Line 
                                                 type="monotone" 
@@ -478,10 +521,11 @@ export default function DashboardPage() {
                                                 stroke="#8b5cf6" 
                                                 strokeWidth={3}
                                                 name="عدد التسجيلات"
-                                                dot={{ fill: '#8b5cf6', r: 5, strokeWidth: 2, stroke: '#fff' }}
-                                                activeDot={{ r: 7, strokeWidth: 2 }}
+                                                dot={{ fill: '#8b5cf6', r: 6, strokeWidth: 3, stroke: '#fff' }}
+                                                activeDot={{ r: 8, strokeWidth: 3, fill: '#7c3aed' }}
+                                                animationDuration={1500}
                                             />
-                                        </LineChart>
+                                        </ComposedChart>
                                     </ResponsiveContainer>
                                 ) : (
                                     <div className="h-80 flex flex-col items-center justify-center text-gray-400">
@@ -495,30 +539,33 @@ export default function DashboardPage() {
                             </CardContent>
                         </Card>
 
-                        {/* Student Growth Area Chart */}
-                        <Card className="col-span-1">
-                            <CardHeader>
+                        {/* Student Growth - Stacked Area Chart with Gradient */}
+                        <Card className="col-span-1 overflow-hidden">
+                            <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30">
                                 <CardTitle className="flex items-center justify-between">
-                                    <span>نمو الطلاب عبر الدفعات</span>
-                                    <span className="text-xs font-normal text-gray-500">
+                                    <span className="flex items-center gap-2">
+                                        <div className="w-2 h-6 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full"></div>
+                                        نمو الطلاب عبر الدفعات
+                                    </span>
+                                    <span className="text-xs font-normal text-gray-500 bg-white dark:bg-gray-800 px-3 py-1 rounded-full">
                                         {chartData.studentGrowth.length} دفعة
                                     </span>
                                 </CardTitle>
                             </CardHeader>
-                            <CardContent>
-                                {chartData.studentGrowth.length > 0 ? (
+                            <CardContent className="pt-6">{chartData.studentGrowth.length > 0 ? (
                                     <ResponsiveContainer width="100%" height={320}>
                                         <AreaChart 
                                             data={chartData.studentGrowth}
                                             margin={{ top: 5, right: 10, left: 0, bottom: 30 }}
                                         >
                                             <defs>
-                                                <linearGradient id="colorStudents" x1="0" y1="0" x2="0" y2="1">
+                                                <linearGradient id="colorStudentsNew" x1="0" y1="0" x2="0" y2="1">
                                                     <stop offset="5%" stopColor="#10b981" stopOpacity={0.8}/>
+                                                    <stop offset="50%" stopColor="#10b981" stopOpacity={0.4}/>
                                                     <stop offset="95%" stopColor="#10b981" stopOpacity={0.1}/>
                                                 </linearGradient>
                                             </defs>
-                                            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" opacity={0.5} />
+                                            <CartesianGrid strokeDasharray="3 3" className="stroke-gray-200 dark:stroke-gray-700" opacity={0.3} vertical={false} />
                                             <XAxis 
                                                 dataKey="batch" 
                                                 className="text-xs"
@@ -536,27 +583,25 @@ export default function DashboardPage() {
                                             />
                                             <Tooltip 
                                                 contentStyle={{ 
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.98)',
-                                                    border: '1px solid #e5e7eb',
-                                                    borderRadius: '8px',
-                                                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                                    padding: '8px 12px'
+                                                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                                                    border: 'none',
+                                                    borderRadius: '12px',
+                                                    boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
+                                                    padding: '12px 16px'
                                                 }}
-                                                labelStyle={{ fontWeight: 'bold', marginBottom: '4px' }}
-                                            />
-                                            <Legend 
-                                                wrapperStyle={{ paddingTop: '10px' }}
-                                                iconType="square"
+                                                labelStyle={{ fontWeight: 'bold', marginBottom: '6px', color: '#1f2937' }}
+                                                cursor={{ strokeDasharray: '3 3' }}
                                             />
                                             <Area 
                                                 type="monotone" 
                                                 dataKey="students" 
                                                 stroke="#10b981" 
                                                 strokeWidth={3}
-                                                fill="url(#colorStudents)"
+                                                fill="url(#colorStudentsNew)"
                                                 name="عدد الطلاب"
-                                                dot={{ fill: '#10b981', r: 5, strokeWidth: 2, stroke: '#fff' }}
-                                                activeDot={{ r: 7, strokeWidth: 2 }}
+                                                dot={{ fill: '#10b981', r: 6, strokeWidth: 3, stroke: '#fff' }}
+                                                activeDot={{ r: 8, strokeWidth: 3, fill: '#059669' }}
+                                                animationDuration={1500}
                                             />
                                         </AreaChart>
                                     </ResponsiveContainer>
