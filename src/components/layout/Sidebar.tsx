@@ -194,21 +194,21 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: Sideb
 
             {/* Sidebar */}
             <aside
-                className={`fixed inset-y-0 right-0 z-50 w-64 bg-linear-to-b from-gray-900 to-gray-800 dark:from-gray-950 dark:to-gray-900 border-l border-gray-700 dark:border-gray-800 transition-transform duration-300 ease-in-out shadow-xl ${
+                className={`fixed inset-y-0 right-0 z-50 w-64 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-700 transition-transform duration-300 ease-in-out shadow-xl ${
                     isMobileMenuOpen
                         ? "translate-x-0"
                         : "translate-x-full lg:translate-x-0"
                 }`}
                 style={{ insetInlineEnd: '0' }}>
                 {/* Logo */}
-                <div className="flex items-center justify-center h-16 border-b border-gray-700 dark:border-gray-800 bg-gray-800/50 dark:bg-gray-900/50">
-                    <h1 className="text-2xl font-bold text-blue-400 dark:text-blue-300">
+                <div className="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                    <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         جامعتي
                     </h1>
                 </div>
 
                 {/* Navigation */}
-                <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-500">
+                <nav className="p-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
                     {filteredNavItems.map((item) => {
                         const isActive = location.pathname === item.path;
                         const Icon = item.icon;
@@ -220,11 +220,11 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: Sideb
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group min-h-11 ${
                                     isActive
-                                        ? "bg-blue-600 dark:bg-blue-700 text-white shadow-md shadow-blue-900/20"
-                                        : "text-gray-300 dark:text-gray-400 hover:bg-gray-700/50 dark:hover:bg-gray-800/50 hover:text-white active:bg-gray-700"
+                                        ? "bg-blue-600 dark:bg-blue-600 text-white shadow-md"
+                                        : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-blue-600 dark:hover:text-blue-400"
                                 }`}>
                                 <Icon className={`w-5 h-5 shrink-0 transition-colors ${
-                                    isActive ? 'text-white' : 'text-gray-400 group-hover:text-blue-400'
+                                    isActive ? 'text-white' : 'text-gray-500 dark:text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
                                 }`} />
                                 <span className="font-medium text-sm leading-tight">{item.label}</span>
                             </Link>
