@@ -85,20 +85,37 @@ export default function DashboardPage() {
     const fetchStats = async () => {
         try {
             const [departmentsRes, coursesRes, studentsRes, batchesRes, termsRes] = await Promise.all([
-                departmentsService.getAll().catch(() => ({ data: { departments: [] } })),
-                coursesService.getAll().catch(() => ({ data: { courses: [] } })),
-                studentsService.getAll().catch(() => ({ data: { students: [] } })),
-                batchesService.getAll().catch(() => ({ data: { batches: [] } })),
-                termsService.getAll().catch(() => ({ data: { terms: [] } })),
+                departmentsService.getAll().catch(() => ({ success: false, data: { departments: [] } })),
+                coursesService.getAll().catch(() => ({ success: false, data: { courses: [] } })),
+                studentsService.getAll({}).catch(() => ({ success: false, data: [] })),
+                batchesService.getAll().catch(() => ({ success: false, data: { batches: [] } })),
+                termsService.getAll().catch(() => ({ success: false, data: { terms: [] } })),
             ]);
 
-            const departments = departmentsRes?.data?.departments || departmentsRes?.departments || [];
-            const courses = coursesRes?.data?.courses || coursesRes?.courses || [];
-            const students = studentsRes?.data?.students || studentsRes?.students || [];
-            const batches = batchesRes?.data?.batches || batchesRes?.batches || [];
-            const terms = termsRes?.data?.terms || termsRes?.terms || [];
+            // Extract departments
+            const departments = departmentsRes?.data?.departments || [];
+            
+            // Extract courses
+            const courses = coursesRes?.data?.courses || [];
+            
+            // Extract students - handle both array and object with data property
+            const students = Array.isArray(studentsRes?.data) 
+                ? studentsRes.data 
+                : (studentsRes?.data?.students || studentsRes?.data?.data || []);
+            
+            // Extract batches
+            const batches = batchesRes?.data?.batches || [];
+            
+            // Extract terms
+            const terms = termsRes?.data?.terms || [];
 
-            console.log('Dashboard Data:', { departments: departments.length, courses: courses.length, students: students.length, batches: batches.length, terms: terms.length });
+            console.log('Dashboard Data:', { 
+                departments: departments.length, 
+                courses: courses.length, 
+                students: students.length, 
+                batches: batches.length, 
+                terms: terms.length 
+            });
 
             // Calculate students by department with strong validation
             let studentsByDept: any[] = [];
