@@ -24,7 +24,7 @@ export default function Header({ isMobileMenuOpen, setIsMobileMenuOpen }: Header
             console.error("Logout error:", error);
         } finally {
             logout();
-            navigate("/login");
+            navigate("/");
         }
     };
 

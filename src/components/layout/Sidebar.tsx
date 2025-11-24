@@ -250,7 +250,8 @@ export default function Sidebar({ isMobileMenuOpen, setIsMobileMenuOpen }: Sideb
                 }`}
                 style={{ insetInlineEnd: '0' }}>
                 {/* Logo */}
-                <div className="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <div className="flex items-center justify-center gap-2 h-16 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                    <GraduationCap className="w-7 h-7 text-blue-600 dark:text-blue-400" />
                     <h1 className="text-2xl font-bold text-blue-600 dark:text-blue-400">
                         {t("common.appName")}
                     </h1>

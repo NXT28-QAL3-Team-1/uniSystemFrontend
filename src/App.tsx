@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuthStore } from "@/store/auth";
+import LandingPage from "@/pages/LandingPage";
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
 import DepartmentsPage from "@/pages/DepartmentsPage";
@@ -384,7 +385,7 @@ function App() {
                 />
                 <Route
                     path="/"
-                    element={<Navigate to="/dashboard" replace />}
+                    element={<LandingPage />}
                 />
                 <Route path="*" element={<NotFoundPage />} />
             </Routes>
