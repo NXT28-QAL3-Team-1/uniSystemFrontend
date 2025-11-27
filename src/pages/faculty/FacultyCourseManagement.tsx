@@ -15,7 +15,11 @@ import {
     TrendingUp,
     Settings,
 } from "lucide-react";
-import { sectionsService, enrollmentsService, attendanceService } from "@/services/api";
+import {
+    sectionsService,
+    enrollmentsService,
+    attendanceService,
+} from "@/services/api";
 import StudentsTab from "@/components/faculty/StudentsTab";
 import GradesTab from "@/components/faculty/GradesTab";
 import AttendanceTab from "@/components/faculty/AttendanceTab";
@@ -59,12 +63,16 @@ export default function FacultyCourseManagement() {
                     ...data,
                     _count: {
                         enrollments: data.enrolledCount || 0,
-                        materials: 0 // Will be updated when materials API is ready
-                    }
+                        materials: 0, // Will be updated when materials API is ready
+                    },
                 };
 
                 setSection(sectionWithCount);
-                console.log("✅ Section data set successfully with", data.enrolledCount || 0, "students");
+                console.log(
+                    "✅ Section data set successfully with",
+                    data.enrolledCount || 0,
+                    "students"
+                );
 
                 // Fetch additional stats
                 await fetchSectionStats();
@@ -80,52 +88,82 @@ export default function FacultyCourseManagement() {
 
     const fetchSectionStats = async () => {
         try {
+            console.log("📊 Fetching section stats for:", sectionId);
+
             // Fetch enrollments to calculate stats
-            const enrollmentsData = await enrollmentsService.getBySectionId(sectionId!);
+            const enrollmentsData = await enrollmentsService.getBySectionId(
+                sectionId!
+            );
+            console.log("📊 Enrollments data:", enrollmentsData);
+
             if (enrollmentsData.success && enrollmentsData.data) {
                 const enrollments = enrollmentsData.data;
-                
-                // Calculate average grade
-                const gradesWithValues = enrollments
-                    .map((e: any) => e.finalGrade)
-                    .filter((g: any) => g !== null && g !== undefined && g > 0);
-                
-                const avgGrade = gradesWithValues.length > 0
-                    ? gradesWithValues.reduce((a: number, b: number) => a + b, 0) / gradesWithValues.length
-                    : 0;
+                console.log("📊 Processing", enrollments.length, "enrollments");
 
-                // Calculate attendance rate
+                // Calculate average grade - finalGrade is an object with total property
+                const gradesWithValues = enrollments
+                    .map((e: any) => e.finalGrade?.total)
+                    .filter(
+                        (total: any) =>
+                            total !== null && total !== undefined && total > 0
+                    );
+
+                console.log(
+                    "📊 Grades with values:",
+                    gradesWithValues.length,
+                    gradesWithValues
+                );
+
+                const avgGrade =
+                    gradesWithValues.length > 0
+                        ? gradesWithValues.reduce(
+                              (a: number, b: number) => a + b,
+                              0
+                          ) / gradesWithValues.length
+                        : 0;
+
+                console.log("📊 Average grade calculated:", avgGrade);
+
+                // Calculate attendance rate from attendances array
                 let totalAttendanceRate = 0;
                 let studentsWithAttendance = 0;
 
                 for (const enrollment of enrollments) {
-                    try {
-                        const attendanceStats = await attendanceService.getStats(enrollment.id);
-                        if (attendanceStats.success && attendanceStats.data) {
-                            const { presentCount = 0, absentCount = 0 } = attendanceStats.data;
-                            const total = presentCount + absentCount;
-                            if (total > 0) {
-                                totalAttendanceRate += (presentCount / total) * 100;
-                                studentsWithAttendance++;
-                            }
-                        }
-                    } catch (err) {
-                        // Skip if error fetching attendance for a student
+                    const attendances = enrollment.attendances || [];
+                    if (attendances.length > 0) {
+                        const presentCount = attendances.filter(
+                            (a: any) => a.status === "PRESENT"
+                        ).length;
+                        const totalSessions = attendances.length;
+                        const rate = (presentCount / totalSessions) * 100;
+                        totalAttendanceRate += rate;
+                        studentsWithAttendance++;
                     }
                 }
 
-                const avgAttendance = studentsWithAttendance > 0
-                    ? totalAttendanceRate / studentsWithAttendance
-                    : 0;
+                const avgAttendance =
+                    studentsWithAttendance > 0
+                        ? totalAttendanceRate / studentsWithAttendance
+                        : 0;
+
+                console.log("📊 Attendance calculated:", {
+                    studentsWithAttendance,
+                    avgAttendance,
+                });
 
                 setStats({
                     averageGrade: Math.round(avgGrade),
                     attendanceRate: Math.round(avgAttendance),
                     materialsCount: 0, // Will be updated when materials API is ready
                 });
+
+                console.log("✅ Stats updated:", {
+                    averageGrade: Math.round(avgGrade),
+                    attendanceRate: Math.round(avgAttendance),
+                });
             }
         } catch (error) {
-            console.error("Error fetching section stats:", error);
+            console.error("❌ Error fetching section stats:", error);
         }
     };
 
@@ -136,7 +174,7 @@ export default function FacultyCourseManagement() {
                     <div className="text-center">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
                         <p className="mt-4 text-gray-600 dark:text-gray-400">
-                            {t('common.loading')}
+                            {t("common.loading")}
                         </p>
                     </div>
                 </div>
@@ -149,7 +187,7 @@ export default function FacultyCourseManagement() {
             <DashboardLayout>
                 <Card>
                     <CardContent className="p-6 text-center text-gray-500">
-                        {t('courseManagement.notFound')}
+                        {t("courseManagement.notFound")}
                     </CardContent>
                 </Card>
             </DashboardLayout>
@@ -165,7 +203,10 @@ export default function FacultyCourseManagement() {
                         📖 {section.course?.code} - {section.course?.nameAr}
                     </h1>
                     <p className="text-gray-500 dark:text-gray-400 mt-1">
-                        {t('courseManagement.sectionInfo', { section: section.code, term: section.term?.name })}
+                        {t("courseManagement.sectionInfo", {
+                            section: section.code,
+                            term: section.term?.name,
+                        })}
                     </p>
                 </div>
 
@@ -176,7 +217,9 @@ export default function FacultyCourseManagement() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t('courseManagement.stats.totalStudents')}
+                                        {t(
+                                            "courseManagement.stats.totalStudents"
+                                        )}
                                     </p>
                                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
                                         {section._count?.enrollments || 0}
@@ -192,10 +235,14 @@ export default function FacultyCourseManagement() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t('courseManagement.stats.averageGrades')}
+                                        {t(
+                                            "courseManagement.stats.averageGrades"
+                                        )}
                                     </p>
                                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        {stats.averageGrade > 0 ? `${stats.averageGrade}%` : "0%"}
+                                        {stats.averageGrade > 0
+                                            ? `${stats.averageGrade}%`
+                                            : "0%"}
                                     </p>
                                 </div>
                                 <TrendingUp className="w-8 h-8 text-green-500" />
@@ -208,10 +255,14 @@ export default function FacultyCourseManagement() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t('courseManagement.stats.attendanceRate')}
+                                        {t(
+                                            "courseManagement.stats.attendanceRate"
+                                        )}
                                     </p>
                                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        {stats.attendanceRate > 0 ? `${stats.attendanceRate}%` : "0%"}
+                                        {stats.attendanceRate > 0
+                                            ? `${stats.attendanceRate}%`
+                                            : "0%"}
                                     </p>
                                 </div>
                                 <Calendar className="w-8 h-8 text-purple-500" />
@@ -224,10 +275,14 @@ export default function FacultyCourseManagement() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {t('courseManagement.stats.uploadedMaterials')}
+                                        {t(
+                                            "courseManagement.stats.uploadedMaterials"
+                                        )}
                                     </p>
                                     <p className="text-2xl font-bold text-gray-900 dark:text-white">
-                                        {section._count?.materials || stats.materialsCount || 0}
+                                        {section._count?.materials ||
+                                            stats.materialsCount ||
+                                            0}
                                     </p>
                                 </div>
                                 <FileText className="w-8 h-8 text-orange-500" />
@@ -243,35 +298,61 @@ export default function FacultyCourseManagement() {
                             <TabsList className="grid grid-cols-4 lg:grid-cols-8 gap-2">
                                 <TabsTrigger value="students" className="gap-2">
                                     <Users className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.students')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.students")}
+                                    </span>
                                 </TabsTrigger>
                                 <TabsTrigger value="grades" className="gap-2">
                                     <BarChart3 className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.grades')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.grades")}
+                                    </span>
                                 </TabsTrigger>
-                                <TabsTrigger value="attendance" className="gap-2">
+                                <TabsTrigger
+                                    value="attendance"
+                                    className="gap-2">
                                     <Calendar className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.attendance')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.attendance")}
+                                    </span>
                                 </TabsTrigger>
-                                <TabsTrigger value="materials" className="gap-2">
+                                <TabsTrigger
+                                    value="materials"
+                                    className="gap-2">
                                     <FileText className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.materials')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.materials")}
+                                    </span>
                                 </TabsTrigger>
-                                <TabsTrigger value="announcements" className="gap-2">
+                                <TabsTrigger
+                                    value="announcements"
+                                    className="gap-2">
                                     <MessageSquare className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.announcements')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t(
+                                            "courseManagement.tabs.announcements"
+                                        )}
+                                    </span>
                                 </TabsTrigger>
                                 <TabsTrigger value="appeals" className="gap-2">
                                     <AlertCircle className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.appeals')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.appeals")}
+                                    </span>
                                 </TabsTrigger>
-                                <TabsTrigger value="analytics" className="gap-2">
+                                <TabsTrigger
+                                    value="analytics"
+                                    className="gap-2">
                                     <TrendingUp className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.analytics')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.analytics")}
+                                    </span>
                                 </TabsTrigger>
                                 <TabsTrigger value="settings" className="gap-2">
                                     <Settings className="w-4 h-4" />
-                                    <span className="hidden sm:inline">{t('courseManagement.tabs.settings')}</span>
+                                    <span className="hidden sm:inline">
+                                        {t("courseManagement.tabs.settings")}
+                                    </span>
                                 </TabsTrigger>
                             </TabsList>
                         </Tabs>

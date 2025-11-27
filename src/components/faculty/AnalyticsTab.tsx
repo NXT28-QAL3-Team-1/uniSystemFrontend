@@ -2,7 +2,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, TrendingUp, TrendingDown, AlertTriangle, Download } from "lucide-react";
+import {
+    BarChart3,
+    TrendingUp,
+    TrendingDown,
+    AlertTriangle,
+    Download,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { enrollmentsService } from "@/services/api";
 
@@ -20,33 +26,123 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
     const fetchAnalyticsData = async () => {
         try {
             setLoading(true);
-            const enrollmentsData = await enrollmentsService.getBySectionId(sectionId);
+            console.log("📊 Fetching analytics for section:", sectionId);
+            const enrollmentsData = await enrollmentsService.getBySectionId(
+                sectionId
+            );
+            console.log("📦 Enrollments response:", enrollmentsData);
+
             if (enrollmentsData.success && enrollmentsData.data) {
                 const enrollments = enrollmentsData.data;
-                const grades = enrollments.map((e: any) => e.finalGrade || 0).filter((g: number) => g > 0);
-                
+                console.log("👥 Total enrollments:", enrollments.length);
+
+                // Extract grades using finalGrade.total (finalGrade is an object)
+                const grades = enrollments
+                    .map((e: any) => e.finalGrade?.total || 0)
+                    .filter((g: number) => g > 0);
+
+                console.log("📈 Grades extracted:", grades);
+
                 if (grades.length > 0) {
-                    const avg = grades.reduce((a: number, b: number) => a + b, 0) / grades.length;
+                    const avg =
+                        grades.reduce((a: number, b: number) => a + b, 0) /
+                        grades.length;
                     const sorted = [...grades].sort((a, b) => a - b);
                     const median = sorted[Math.floor(sorted.length / 2)];
                     const highest = Math.max(...grades);
                     const lowest = Math.min(...grades);
-                    const passing = grades.filter((g: number) => g >= 60).length;
-                    
+                    const passing = grades.filter(
+                        (g: number) => g >= 60
+                    ).length;
+
+                    // Find students with highest/lowest grades
+                    const highestEnrollment = enrollments.find(
+                        (e: any) => e.finalGrade?.total === highest
+                    );
+                    const lowestEnrollment = enrollments.find(
+                        (e: any) => e.finalGrade?.total === lowest
+                    );
+
                     setStats({
                         average: avg.toFixed(1),
-                        median,
-                        highest,
-                        highestStudent: enrollments.find((e: any) => e.finalGrade === highest)?.student?.nameAr || "-",
-                        lowest,
-                        lowestStudent: enrollments.find((e: any) => e.finalGrade === lowest)?.student?.nameAr || "-",
+                        median: median.toFixed(1),
+                        highest: highest.toFixed(1),
+                        highestStudent:
+                            highestEnrollment?.student?.nameAr || "-",
+                        lowest: lowest.toFixed(1),
+                        lowestStudent: lowestEnrollment?.student?.nameAr || "-",
                         passRate: Math.round((passing / grades.length) * 100),
-                        failRate: Math.round(((grades.length - passing) / grades.length) * 100),
+                        failRate: Math.round(
+                            ((grades.length - passing) / grades.length) * 100
+                        ),
                     });
+
+                    console.log("✅ Stats calculated:", {
+                        average: avg.toFixed(1),
+                        median: median.toFixed(1),
+                        highest: highest.toFixed(1),
+                        lowest: lowest.toFixed(1),
+                        passRate: Math.round((passing / grades.length) * 100),
+                    });
+
+                    // Calculate grade distribution based on letterGrade
+                    const letterGradeMap = new Map<string, number>();
+                    enrollments.forEach((e: any) => {
+                        const letterGrade = e.finalGrade?.letterGrade;
+                        if (letterGrade) {
+                            letterGradeMap.set(
+                                letterGrade,
+                                (letterGradeMap.get(letterGrade) || 0) + 1
+                            );
+                        }
+                    });
+
+                    const gradeOrder = [
+                        "A+",
+                        "A",
+                        "B+",
+                        "B",
+                        "C+",
+                        "C",
+                        "D",
+                        "F",
+                    ];
+                    const distribution = gradeOrder.map((grade) => ({
+                        grade,
+                        count: letterGradeMap.get(grade) || 0,
+                        percentage: Math.round(
+                            ((letterGradeMap.get(grade) || 0) /
+                                enrollments.length) *
+                                100
+                        ),
+                    }));
+
+                    setGradeDistribution(distribution);
+                    console.log("📊 Grade distribution:", distribution);
+
+                    // Find at-risk students (grade < 65%)
+                    const atRisk = enrollments
+                        .filter(
+                            (e: any) =>
+                                e.finalGrade?.total && e.finalGrade.total < 65
+                        )
+                        .map((e: any) => ({
+                            code: e.student?.code || "N/A",
+                            name:
+                                e.student?.nameAr ||
+                                e.student?.nameEn ||
+                                "Unknown",
+                            grade: e.finalGrade.total.toFixed(1),
+                        }));
+
+                    setAtRiskStudents(atRisk);
+                    console.log("⚠️ At-risk students:", atRisk);
+                } else {
+                    console.log("⚠️ No grades found");
                 }
             }
         } catch (error) {
-            console.error("Error fetching analytics:", error);
+            console.error("❌ Error fetching analytics:", error);
         } finally {
             setLoading(false);
         }
@@ -86,7 +182,9 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-                    <p className="mt-4 text-gray-600 dark:text-gray-400">{t('common.loading')}</p>
+                    <p className="mt-4 text-gray-600 dark:text-gray-400">
+                        {t("common.loading")}
+                    </p>
                 </div>
             </div>
         );
@@ -95,9 +193,11 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="text-lg font-semibold">{t('analyticsTab.title')}</h3>
+                <h3 className="text-lg font-semibold">
+                    {t("analyticsTab.title")}
+                </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    {t('analyticsTab.subtitle')}
+                    {t("analyticsTab.subtitle")}
                 </p>
             </div>
 
@@ -105,26 +205,42 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card>
                     <CardContent className="p-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('analyticsTab.average')}</p>
-                        <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">{stats?.average || defaultStats.average}%</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("analyticsTab.average")}
+                        </p>
+                        <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                            {stats?.average || defaultStats.average}%
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('analyticsTab.median')}</p>
-                        <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">{stats?.median || defaultStats.median}%</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("analyticsTab.median")}
+                        </p>
+                        <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+                            {stats?.median || defaultStats.median}%
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('analyticsTab.passRate')}</p>
-                        <p className="text-3xl font-bold text-green-600 dark:text-green-400">{stats?.passRate || defaultStats.passRate}%</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("analyticsTab.passRate")}
+                        </p>
+                        <p className="text-3xl font-bold text-green-600 dark:text-green-400">
+                            {stats?.passRate || defaultStats.passRate}%
+                        </p>
                     </CardContent>
                 </Card>
                 <Card>
                     <CardContent className="p-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('analyticsTab.failRate')}</p>
-                        <p className="text-3xl font-bold text-red-600 dark:text-red-400">{stats?.failRate || defaultStats.failRate}%</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("analyticsTab.failRate")}
+                        </p>
+                        <p className="text-3xl font-bold text-red-600 dark:text-red-400">
+                            {stats?.failRate || defaultStats.failRate}%
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -134,26 +250,35 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
                 <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                         <BarChart3 className="w-5 h-5" />
-                        {t('analyticsTab.gradeDistribution')}
+                        {t("analyticsTab.gradeDistribution")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-3">
-                        {(gradeDistribution.length > 0 ? gradeDistribution : defaultGradeDistribution).map((item) => (
-                            <div key={item.grade} className="flex items-center gap-4">
-                                <div className="w-12 font-bold text-center">{item.grade}</div>
+                        {(gradeDistribution.length > 0
+                            ? gradeDistribution
+                            : defaultGradeDistribution
+                        ).map((item) => (
+                            <div
+                                key={item.grade}
+                                className="flex items-center gap-4">
+                                <div className="w-12 font-bold text-center">
+                                    {item.grade}
+                                </div>
                                 <div className="flex-1">
                                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-6 overflow-hidden">
                                         <div
                                             className="h-full bg-linear-to-r from-blue-500 to-purple-500 flex items-center justify-end pr-2 text-white text-sm font-medium"
-                                            style={{ width: `${item.percentage}%` }}
-                                        >
-                                            {item.percentage > 10 && `${item.percentage}%`}
+                                            style={{
+                                                width: `${item.percentage}%`,
+                                            }}>
+                                            {item.percentage > 10 &&
+                                                `${item.percentage}%`}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="w-20 text-sm text-gray-600 dark:text-gray-400">
-                                    {item.count} {t('analyticsTab.student')}
+                                    {item.count} {t("analyticsTab.student")}
                                 </div>
                             </div>
                         ))}
@@ -167,12 +292,17 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
                     <CardHeader className="bg-green-50 dark:bg-green-900/20">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <TrendingUp className="w-5 h-5 text-green-500" />
-                            {t('analyticsTab.highestGrade')}
+                            {t("analyticsTab.highestGrade")}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('analyticsTab.studentLabel')}</p>
-                        <p className="font-medium text-lg">{stats?.highestStudent || defaultStats.highestStudent}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("analyticsTab.studentLabel")}
+                        </p>
+                        <p className="font-medium text-lg">
+                            {stats?.highestStudent ||
+                                defaultStats.highestStudent}
+                        </p>
                         <p className="text-4xl font-bold text-green-600 dark:text-green-400 mt-2">
                             {stats?.highest || defaultStats.highest}%
                         </p>
@@ -183,13 +313,19 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
                     <CardHeader className="bg-red-50 dark:bg-red-900/20">
                         <CardTitle className="text-lg flex items-center gap-2">
                             <TrendingDown className="w-5 h-5 text-red-500" />
-                            {t('analyticsTab.lowestGrade')}
+                            {t("analyticsTab.lowestGrade")}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-6">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('analyticsTab.studentLabel')}</p>
-                        <p className="font-medium text-lg">{stats?.lowestStudent || defaultStats.lowestStudent}</p>
-                        <p className="text-4xl font-bold text-red-600 dark:text-red-400 mt-2">{stats?.lowest || defaultStats.lowest}%</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {t("analyticsTab.studentLabel")}
+                        </p>
+                        <p className="font-medium text-lg">
+                            {stats?.lowestStudent || defaultStats.lowestStudent}
+                        </p>
+                        <p className="text-4xl font-bold text-red-600 dark:text-red-400 mt-2">
+                            {stats?.lowest || defaultStats.lowest}%
+                        </p>
                     </CardContent>
                 </Card>
             </div>
@@ -199,7 +335,7 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
                 <CardHeader className="bg-yellow-50 dark:bg-yellow-900/20">
                     <CardTitle className="flex items-center gap-2">
                         <AlertTriangle className="w-5 h-5 text-yellow-600" />
-                        {t('analyticsTab.atRiskStudents')}
+                        {t("analyticsTab.atRiskStudents")}
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -207,18 +343,23 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
                         {atRiskStudents.map((student) => (
                             <div
                                 key={student.code}
-                                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg"
-                            >
+                                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                 <div>
-                                    <p className="font-medium">{student.name}</p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">{student.code}</p>
+                                    <p className="font-medium">
+                                        {student.name}
+                                    </p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {student.code}
+                                    </p>
                                 </div>
-                                <Badge className="bg-yellow-500">{student.grade}%</Badge>
+                                <Badge className="bg-yellow-500">
+                                    {student.grade}%
+                                </Badge>
                             </div>
                         ))}
                     </div>
                     <Button className="w-full mt-4" variant="outline">
-                        {t('analyticsTab.sendWarning')}
+                        {t("analyticsTab.sendWarning")}
                     </Button>
                 </CardContent>
             </Card>
@@ -226,25 +367,32 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
             {/* Historical Comparison */}
             <Card>
                 <CardHeader>
-                    <CardTitle>{t('analyticsTab.historicalTrends')}</CardTitle>
+                    <CardTitle>{t("analyticsTab.historicalTrends")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="space-y-4">
                         {historicalData.map((item, index) => (
-                            <div key={item.term} className="flex items-center gap-4">
-                                <div className="w-32 font-medium">{item.term}</div>
+                            <div
+                                key={item.term}
+                                className="flex items-center gap-4">
+                                <div className="w-32 font-medium">
+                                    {item.term}
+                                </div>
                                 <div className="flex-1">
                                     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-8">
                                         <div
                                             className="h-full bg-linear-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-end pr-3 text-white font-medium"
-                                            style={{ width: `${item.average}%` }}
-                                        >
+                                            style={{
+                                                width: `${item.average}%`,
+                                            }}>
                                             {item.average}%
                                         </div>
                                     </div>
                                 </div>
                                 {index === historicalData.length - 1 && (
-                                    <Badge className="bg-green-500">✅ {t('common.success')}</Badge>
+                                    <Badge className="bg-green-500">
+                                        ✅ {t("common.success")}
+                                    </Badge>
                                 )}
                             </div>
                         ))}
@@ -256,7 +404,7 @@ export default function AnalyticsTab({ sectionId }: { sectionId: string }) {
             <div className="flex justify-end">
                 <Button variant="outline">
                     <Download className="w-4 h-4 ml-2" />
-                    {t('analyticsTab.exportReport')}
+                    {t("analyticsTab.exportReport")}
                 </Button>
             </div>
         </div>
