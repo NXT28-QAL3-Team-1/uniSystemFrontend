@@ -6,6 +6,8 @@ interface User {
     email: string;
     role: "SUPER_ADMIN" | "ADMIN" | "FACULTY" | "TA" | "STUDENT";
     status: string;
+    facultyId?: string;
+    studentId?: string;
 }
 
 interface AuthState {

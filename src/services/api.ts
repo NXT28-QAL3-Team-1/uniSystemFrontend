@@ -363,8 +363,8 @@ export const sectionsService = {
         );
         return data;
     },
-    getAttendance: async (id: string) => {
-        const { data } = await api.get(`/sections/${id}/attendance`);
+    getSectionAttendance: async (id: string) => {
+        const { data } = await api.get(`/attendance/section/${id}`);
         return data;
     },
 };
@@ -445,7 +445,9 @@ export const gradesService = {
         return data;
     },
     getSectionComponents: async (sectionId: string) => {
-        const { data } = await api.get(`/grades/components/section/${sectionId}`);
+        const { data } = await api.get(
+            `/grades/components/section/${sectionId}`
+        );
         return data;
     },
     recordGrade: async (payload: any) => {
