@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-    ArrowLeft,
     Mail,
     Phone,
     MapPin,
@@ -12,9 +10,9 @@ import {
     Globe,
     CheckCircle2,
 } from "lucide-react";
+import PublicNav from "@/components/layout/PublicNav";
 
 const ContactPage: React.FC = () => {
-    const navigate = useNavigate();
     const { t } = useTranslation();
     const [formData, setFormData] = useState({
         name: "",
@@ -58,7 +56,7 @@ const ContactPage: React.FC = () => {
             title: t("contact.methods.phone.title"),
             value: "+1 (555) 123-4567",
             description: t("contact.methods.phone.description"),
-            color: "from-purple-500 to-pink-500",
+            color: "from-blue-500 to-cyan-500",
         },
         {
             icon: <MapPin className="w-6 h-6" />,
@@ -77,17 +75,12 @@ const ContactPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+            <PublicNav />
+
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 py-20 px-6">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-500 dark:from-blue-800 dark:to-blue-700 pt-32 pb-20 px-6">
                 <div className="container mx-auto max-w-6xl">
-                    <button
-                        onClick={() => navigate("/")}
-                        className="flex items-center space-x-2 rtl:space-x-reverse text-white mb-8 hover:opacity-80 transition-opacity"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                        <span>{t("common.back")}</span>
-                    </button>
                     <div className="flex items-center space-x-4 rtl:space-x-reverse mb-6">
                         <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center">
                             <MessageSquare className="w-8 h-8 text-white" />
@@ -112,11 +105,9 @@ const ContactPage: React.FC = () => {
                                 className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-fade-in-up"
                                 style={{
                                     animationDelay: `${index * 100}ms`,
-                                }}
-                            >
+                                }}>
                                 <div
-                                    className={`w-12 h-12 bg-gradient-to-br ${method.color} rounded-xl flex items-center justify-center text-white mb-4`}
-                                >
+                                    className={`w-12 h-12 bg-gradient-to-br ${method.color} rounded-xl flex items-center justify-center text-white mb-4`}>
                                     {method.icon}
                                 </div>
                                 <h3 className="font-bold text-gray-800 dark:text-gray-100 mb-2">
@@ -151,7 +142,9 @@ const ContactPage: React.FC = () => {
                                         </p>
                                     </div>
                                 ) : (
-                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                    <form
+                                        onSubmit={handleSubmit}
+                                        className="space-y-6">
                                         <div className="grid md:grid-cols-2 gap-6">
                                             <div>
                                                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -164,7 +157,9 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleChange}
                                                     required
                                                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors"
-                                                    placeholder={t("contact.form.namePlaceholder")}
+                                                    placeholder={t(
+                                                        "contact.form.namePlaceholder"
+                                                    )}
                                                 />
                                             </div>
                                             <div>
@@ -178,7 +173,9 @@ const ContactPage: React.FC = () => {
                                                     onChange={handleChange}
                                                     required
                                                     className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors"
-                                                    placeholder={t("contact.form.emailPlaceholder")}
+                                                    placeholder={t(
+                                                        "contact.form.emailPlaceholder"
+                                                    )}
                                                 />
                                             </div>
                                         </div>
@@ -191,22 +188,31 @@ const ContactPage: React.FC = () => {
                                                 value={formData.subject}
                                                 onChange={handleChange}
                                                 required
-                                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors"
-                                            >
+                                                className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors">
                                                 <option value="">
-                                                    {t("contact.form.selectSubject")}
+                                                    {t(
+                                                        "contact.form.selectSubject"
+                                                    )}
                                                 </option>
                                                 <option value="general">
-                                                    {t("contact.form.subjects.general")}
+                                                    {t(
+                                                        "contact.form.subjects.general"
+                                                    )}
                                                 </option>
                                                 <option value="support">
-                                                    {t("contact.form.subjects.support")}
+                                                    {t(
+                                                        "contact.form.subjects.support"
+                                                    )}
                                                 </option>
                                                 <option value="demo">
-                                                    {t("contact.form.subjects.demo")}
+                                                    {t(
+                                                        "contact.form.subjects.demo"
+                                                    )}
                                                 </option>
                                                 <option value="partnership">
-                                                    {t("contact.form.subjects.partnership")}
+                                                    {t(
+                                                        "contact.form.subjects.partnership"
+                                                    )}
                                                 </option>
                                             </select>
                                         </div>
@@ -221,14 +227,16 @@ const ContactPage: React.FC = () => {
                                                 required
                                                 rows={6}
                                                 className="w-full px-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 focus:border-blue-500 dark:focus:border-blue-400 focus:outline-none transition-colors resize-none"
-                                                placeholder={t("contact.form.messagePlaceholder")}
-                                            ></textarea>
+                                                placeholder={t(
+                                                    "contact.form.messagePlaceholder"
+                                                )}></textarea>
                                         </div>
                                         <button
                                             type="submit"
-                                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-500 dark:to-purple-500 text-white py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse group"
-                                        >
-                                            <span>{t("contact.form.submit")}</span>
+                                            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 dark:from-blue-500 dark:to-blue-400 text-white py-4 rounded-xl font-semibold hover:shadow-xl transition-all duration-300 flex items-center justify-center space-x-2 rtl:space-x-reverse group">
+                                            <span>
+                                                {t("contact.form.submit")}
+                                            </span>
                                             <Send className="w-5 h-5 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform" />
                                         </button>
                                     </form>
@@ -238,7 +246,7 @@ const ContactPage: React.FC = () => {
 
                         {/* Additional Info */}
                         <div className="space-y-6">
-                            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-3xl p-8">
+                            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-3xl p-8">
                                 <Globe className="w-12 h-12 text-blue-600 dark:text-blue-400 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
                                     {t("contact.info.global.title")}
@@ -248,7 +256,7 @@ const ContactPage: React.FC = () => {
                                 </p>
                             </div>
                             <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg">
-                                <MessageSquare className="w-12 h-12 text-purple-600 dark:text-purple-400 mb-4" />
+                                <MessageSquare className="w-12 h-12 text-blue-600 dark:text-blue-400 mb-4" />
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
                                     {t("contact.info.support.title")}
                                 </h3>
@@ -257,7 +265,9 @@ const ContactPage: React.FC = () => {
                                 </p>
                                 <div className="flex items-center space-x-2 rtl:space-x-reverse text-sm text-gray-500 dark:text-gray-400">
                                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                                    <span>{t("contact.info.support.available")}</span>
+                                    <span>
+                                        {t("contact.info.support.available")}
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -265,19 +275,6 @@ const ContactPage: React.FC = () => {
                 </div>
             </section>
 
-            {/* Map Placeholder */}
-            <section className="py-20 px-6 bg-white dark:bg-gray-800">
-                <div className="container mx-auto max-w-6xl">
-                    <div className="bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 rounded-3xl h-96 flex items-center justify-center">
-                        <div className="text-center">
-                            <MapPin className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                            <p className="text-gray-500 dark:text-gray-400 text-lg">
-                                {t("contact.map.placeholder")}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
     );
 };

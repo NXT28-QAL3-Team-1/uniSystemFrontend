@@ -1,6 +1,6 @@
 {
     "landing": {
-        "appName": "UniSystem",
+        "appName": "جامعتي",
         "nav": {
             "home": "Home",
             "features": "Features",
@@ -11,7 +11,7 @@
         },
         "hero": {
             "title": "Revolutionize Your University Management",
-            "subtitle": "Welcome to UniSystem",
+            "subtitle": "Welcome to جامعتي",
             "description": "Streamline academic operations, enhance student experience, and empower educators with our comprehensive university management platform.",
             "getStarted": "Get Started",
             "learnMore": "Learn More"
@@ -63,11 +63,11 @@
             },
             "platformTitle": "Comprehensive Platform",
             "platformSubtitle": "All-in-one solution",
-            "platformDescription": "UniSystem provides a unified platform for managing all aspects of academic life, from enrollment to graduation, with intuitive tools designed for the modern educational environment."
+            "platformDescription": "جامعتي provides a unified platform for managing all aspects of academic life, from enrollment to graduation, with intuitive tools designed for the modern educational environment."
         },
         "cta": {
             "title": "Ready to Get Started?",
-            "subtitle": "Join thousands of institutions transforming education with UniSystem"
+            "subtitle": "Join thousands of institutions transforming education with جامعتي"
         },
         "footer": {
             "description": "Transforming education through innovative technology. Empowering students, faculty, and administrators to achieve academic excellence in the digital age.",
@@ -75,7 +75,7 @@
         }
     },
     "common": {
-        "appName": "My University",
+        "appName": "جامعتي",
         "login": "Login",
         "logout": "Logout",
         "email": "Email",
@@ -166,7 +166,7 @@
         "enrollmentCount": "Enrollment Count"
     },
 
-     "reports": {
+    "reports": {
         "title": " Reports",
         "General Statistics": " General Statistics",
         "Grade sheet": "Grade Sheet",
@@ -178,7 +178,7 @@
         "Overall GPA": "Overall GPA",
         "Enrollment Rate": "Enrollment Rate",
         "Grade Distribution": "Grade Distribution",
-        "Most Requested Specializations": "Most Requested Specializations",  
+        "Most Requested Specializations": "Most Requested Specializations",
         "Student Selection": "Student Selection",
         "Select a Student": "Select a Student",
         "Semester Selection": "Semester Selection",
@@ -193,7 +193,7 @@
         "Rate": "Rate",
         "Select a Semester": "Select a Semester"
     },
-    
+
     "colleges": {
         "title": "Colleges",
         "create": "Create New College",
@@ -1686,7 +1686,7 @@
         },
         "mission": {
             "title": "Our Mission",
-            "description": "At UniSystem, we're on a mission to revolutionize university management by providing intuitive, powerful tools that streamline operations and enhance the educational experience for students, faculty, and administrators alike.",
+            "description": "At جامعتي, we're on a mission to revolutionize university management by providing intuitive, powerful tools that streamline operations and enhance the educational experience for students, faculty, and administrators alike.",
             "details": "We believe that technology should empower education, not complicate it. That's why we've built a platform that's both comprehensive and easy to use, helping institutions focus on what matters most: education."
         },
         "highlights": {
@@ -1731,7 +1731,7 @@
         },
         "team": {
             "title": "Meet Our Team",
-            "description": "Behind UniSystem is a passionate team of educators, developers, and designers committed to transforming education",
+            "description": "Behind جامعتي is a passionate team of educators, developers, and designers committed to transforming education",
             "details": "Our diverse team brings together expertise in education technology, software development, and user experience design. We work closely with educational institutions to understand their needs and deliver solutions that make a real difference."
         }
     },

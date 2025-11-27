@@ -1,8 +1,6 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-    ArrowLeft,
     Target,
     Users,
     Award,
@@ -13,9 +11,9 @@ import {
     BookOpen,
     Heart,
 } from "lucide-react";
+import PublicNav from "@/components/layout/PublicNav";
 
 const AboutPage: React.FC = () => {
-    const navigate = useNavigate();
     const { t } = useTranslation();
 
     const values = [
@@ -29,7 +27,7 @@ const AboutPage: React.FC = () => {
             icon: <Heart className="w-8 h-8" />,
             title: t("about.values.innovation.title"),
             description: t("about.values.innovation.description"),
-            color: "from-purple-500 to-pink-500",
+            color: "from-blue-500 to-cyan-500",
         },
         {
             icon: <Users className="w-8 h-8" />,
@@ -69,17 +67,11 @@ const AboutPage: React.FC = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-blue-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+            <PublicNav />
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 py-20 px-6">
+            <div className="bg-gradient-to-r from-blue-600 to-blue-500 dark:from-blue-800 dark:to-blue-700 pt-32 pb-20 px-6">
                 <div className="container mx-auto max-w-6xl">
-                    <button
-                        onClick={() => navigate("/")}
-                        className="flex items-center space-x-2 rtl:space-x-reverse text-white mb-8 hover:opacity-80 transition-opacity"
-                    >
-                        <ArrowLeft className="w-5 h-5" />
-                        <span>{t("common.back")}</span>
-                    </button>
                     <h1 className="text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up">
                         {t("about.header.title")}
                     </h1>
@@ -95,7 +87,7 @@ const AboutPage: React.FC = () => {
                     <div className="grid md:grid-cols-2 gap-12 items-center">
                         <div className="animate-fade-in-up">
                             <div className="flex items-center space-x-3 rtl:space-x-reverse mb-6">
-                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center">
                                     <Target className="w-6 h-6 text-white" />
                                 </div>
                                 <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
@@ -118,23 +110,31 @@ const AboutPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                                {t("about.highlights.efficiency.title")}
+                                                {t(
+                                                    "about.highlights.efficiency.title"
+                                                )}
                                             </h3>
                                             <p className="text-gray-600 dark:text-gray-300">
-                                                {t("about.highlights.efficiency.description")}
+                                                {t(
+                                                    "about.highlights.efficiency.description"
+                                                )}
                                             </p>
                                         </div>
                                     </div>
                                     <div className="flex items-start space-x-4 rtl:space-x-reverse">
-                                        <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
-                                            <Users className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                                        <div className="w-10 h-10 bg-cyan-100 dark:bg-cyan-900 rounded-lg flex items-center justify-center flex-shrink-0 mt-1">
+                                            <Users className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                                {t("about.highlights.userCentric.title")}
+                                                {t(
+                                                    "about.highlights.userCentric.title"
+                                                )}
                                             </h3>
                                             <p className="text-gray-600 dark:text-gray-300">
-                                                {t("about.highlights.userCentric.description")}
+                                                {t(
+                                                    "about.highlights.userCentric.description"
+                                                )}
                                             </p>
                                         </div>
                                     </div>
@@ -144,10 +144,14 @@ const AboutPage: React.FC = () => {
                                         </div>
                                         <div>
                                             <h3 className="font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                                                {t("about.highlights.security.title")}
+                                                {t(
+                                                    "about.highlights.security.title"
+                                                )}
                                             </h3>
                                             <p className="text-gray-600 dark:text-gray-300">
-                                                {t("about.highlights.security.description")}
+                                                {t(
+                                                    "about.highlights.security.description"
+                                                )}
                                             </p>
                                         </div>
                                     </div>
@@ -176,11 +180,9 @@ const AboutPage: React.FC = () => {
                                 className="group bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-800 rounded-2xl p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 animate-fade-in-up"
                                 style={{
                                     animationDelay: `${index * 100}ms`,
-                                }}
-                            >
+                                }}>
                                 <div
-                                    className={`w-16 h-16 bg-gradient-to-br ${value.color} rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300`}
-                                >
+                                    className={`w-16 h-16 bg-gradient-to-br ${value.color} rounded-xl flex items-center justify-center text-white mb-4 group-hover:scale-110 transition-transform duration-300`}>
                                     {value.icon}
                                 </div>
                                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 mb-3">
@@ -196,7 +198,7 @@ const AboutPage: React.FC = () => {
             </section>
 
             {/* Stats Section */}
-            <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800">
+            <section className="py-20 px-6 bg-gradient-to-r from-blue-600 to-blue-500 dark:from-blue-800 dark:to-blue-700">
                 <div className="container mx-auto max-w-6xl">
                     <div className="grid md:grid-cols-4 gap-8">
                         {stats.map((stat, index) => (
@@ -205,8 +207,7 @@ const AboutPage: React.FC = () => {
                                 className="text-center animate-fade-in-up"
                                 style={{
                                     animationDelay: `${index * 100}ms`,
-                                }}
-                            >
+                                }}>
                                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mx-auto mb-4">
                                     {stat.icon}
                                 </div>
@@ -231,7 +232,7 @@ const AboutPage: React.FC = () => {
                     <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto">
                         {t("about.team.description")}
                     </p>
-                    <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-3xl p-12">
+                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-3xl p-12">
                         <p className="text-lg text-gray-700 dark:text-gray-300 leading-relaxed">
                             {t("about.team.details")}
                         </p>
