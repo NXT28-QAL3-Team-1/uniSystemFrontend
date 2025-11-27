@@ -1,9 +1,9 @@
 import { Formik, Form, Field } from "formik";
 import { z } from "zod";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { GraduationCap } from "lucide-react";
+import { GraduationCap, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { authService } from "@/services/api";
@@ -21,6 +21,16 @@ export default function LoginPage() {
     const navigate = useNavigate();
     const { login } = useAuthStore();
     const [error, setError] = useState("");
+    const [isPageLoading, setIsPageLoading] = useState(true);
+
+    useEffect(() => {
+        // Simulate page loading
+        const timer = setTimeout(() => {
+            setIsPageLoading(false);
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, []);
 
     const handleLogin = async (
         values: LoginForm,
@@ -91,6 +101,19 @@ export default function LoginPage() {
 
         return errors;
     };
+
+    if (isPageLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900">
+                <div className="text-center">
+                    <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-gray-400">
+                        {t("common.loading")}
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
