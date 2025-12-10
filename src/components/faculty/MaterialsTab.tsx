@@ -191,10 +191,12 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">{t('materialsTab.title')}</h3>
+                <h3 className="text-lg font-semibold">
+                    {t("materialsTab.title")}
+                </h3>
                 <Button onClick={() => setUploadDialog(true)}>
                     <Plus className="w-4 h-4 ml-2" />
-                    {t('materialsTab.uploadNew')}
+                    {t("materialsTab.uploadNew")}
                 </Button>
             </div>
 
@@ -203,7 +205,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                     <Card key={weekNum}>
                         <CardHeader className="bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30">
                             <CardTitle className="text-lg">
-                                {t('materialsTab.week', { week: weekNum })}
+                                {t("materialsTab.week", { week: weekNum })}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
@@ -230,7 +232,12 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                             {material.status ===
                                                 "scheduled" && (
                                                 <span className="text-xs text-orange-600">
-                                                    {t('materialsTab.scheduledDate', { date: material.publishDate })}
+                                                    {t(
+                                                        "materialsTab.scheduledDate",
+                                                        {
+                                                            date: material.publishDate,
+                                                        }
+                                                    )}
                                                 </span>
                                             )}
                                             <Button
@@ -253,7 +260,9 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                 <Card>
                     <CardHeader className="bg-linear-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
                         <CardTitle className="text-lg text-gray-600 dark:text-gray-400">
-                            {t('materialsTab.comingWeek', { week: weeks.length + 1 })}
+                            {t("materialsTab.comingWeek", {
+                                week: weeks.length + 1,
+                            })}
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
@@ -267,7 +276,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                 setUploadDialog(true);
                             }}>
                             <Plus className="w-4 h-4 ml-2" />
-                            {t('materialsTab.uploadNew')}
+                            {t("materialsTab.uploadNew")}
                         </Button>
                     </CardContent>
                 </Card>
@@ -278,14 +287,14 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                 <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader className="pb-4">
                         <DialogTitle className="text-xl font-bold">
-                            {t('materialsTab.uploadNew')}
+                            {t("materialsTab.uploadNew")}
                         </DialogTitle>
                     </DialogHeader>
                     <div className="space-y-6 m-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label className="text-sm font-semibold">
-                                    {t('materialsTab.weekNumber')}
+                                    {t("materialsTab.weekNumber")}
                                 </Label>
                                 <Select
                                     value={newMaterial.weekNumber.toString()}
@@ -306,7 +315,9 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                             <SelectItem
                                                 key={week}
                                                 value={week.toString()}>
-                                                {t('materialsTab.week', { week })}
+                                                {t("materialsTab.week", {
+                                                    week,
+                                                })}
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -314,7 +325,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-sm font-semibold">
-                                    {t('materialsTab.type')}
+                                    {t("materialsTab.type")}
                                 </Label>
                                 <Select
                                     value={newMaterial.type}
@@ -329,16 +340,16 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="pdf">
-                                            📄 {t('materialsTab.pdf')}
+                                            📄 {t("materialsTab.pdf")}
                                         </SelectItem>
                                         <SelectItem value="video">
-                                            🎥 {t('materialsTab.video')}
+                                            🎥 {t("materialsTab.video")}
                                         </SelectItem>
                                         <SelectItem value="code">
-                                            💻 {t('materialsTab.code')}
+                                            💻 {t("materialsTab.code")}
                                         </SelectItem>
                                         <SelectItem value="link">
-                                            🔗 {t('materialsTab.link')}
+                                            🔗 {t("materialsTab.link")}
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
@@ -347,7 +358,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
 
                         <div className="space-y-2">
                             <Label className="text-sm font-semibold">
-                                {t('materialsTab.titleLabel')}
+                                {t("materialsTab.titleLabel")}
                             </Label>
                             <Input
                                 value={newMaterial.title}
@@ -357,14 +368,14 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                         title: e.target.value,
                                     })
                                 }
-                                placeholder={t('materialsTab.titlePlaceholder')}
+                                placeholder={t("materialsTab.titlePlaceholder")}
                                 className="h-11"
                             />
                         </div>
 
                         <div className="space-y-2">
                             <Label className="text-sm font-semibold">
-                                {t('materialsTab.attachFiles')}
+                                {t("materialsTab.attachFiles")}
                             </Label>
                             <div
                                 onDragOver={handleDragOver}
@@ -412,17 +423,17 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                             ? "text-blue-600 dark:text-blue-400"
                                             : "text-gray-700 dark:text-gray-300"
                                     }`}>
-                                    {t('materialsTab.dragDrop')}
+                                    {t("materialsTab.dragDrop")}
                                 </p>
                                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
                                     {newMaterial.type === "pdf" &&
-                                        t('materialsTab.pdfOnly')}
+                                        t("materialsTab.pdfOnly")}
                                     {newMaterial.type === "video" &&
-                                        t('materialsTab.videoOnly')}
+                                        t("materialsTab.videoOnly")}
                                     {newMaterial.type === "code" &&
-                                        t('materialsTab.codeOnly')}
+                                        t("materialsTab.codeOnly")}
                                     {newMaterial.type === "link" &&
-                                        t('materialsTab.anyFile')}
+                                        t("materialsTab.anyFile")}
                                 </p>
                             </div>
 
@@ -430,7 +441,11 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                             {uploadedFiles.length > 0 && (
                                 <div className="mt-4 space-y-2">
                                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {uploadedFiles.length} {uploadedFiles.length === 1 ? t('materialsTab.file') : t('materialsTab.files')} {t('materialsTab.selected')}:
+                                        {uploadedFiles.length}{" "}
+                                        {uploadedFiles.length === 1
+                                            ? t("materialsTab.file")
+                                            : t("materialsTab.files")}{" "}
+                                        {t("materialsTab.selected")}:
                                     </p>
                                     {uploadedFiles.map((file, index) => (
                                         <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
@@ -466,7 +481,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                         {newMaterial.type === "link" && (
                             <div className="space-y-2">
                                 <Label className="text-sm font-semibold">
-                                    {t('materialsTab.linkLabel')}
+                                    {t("materialsTab.linkLabel")}
                                 </Label>
                                 <Input
                                     value={newMaterial.url}
@@ -484,7 +499,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
 
                         <div className="space-y-3">
                             <Label className="text-sm font-semibold">
-                                {t('materialsTab.publishDateLabel')}
+                                {t("materialsTab.publishDateLabel")}
                             </Label>
                             <div className="flex items-center gap-6">
                                 <label className="flex items-center gap-2 cursor-pointer">
@@ -500,7 +515,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                         className="w-4 h-4"
                                     />
                                     <span className="text-sm font-medium">
-                                        {t('materialsTab.publishNow')}
+                                        {t("materialsTab.publishNow")}
                                     </span>
                                 </label>
                                 <label className="flex items-center gap-2 cursor-pointer">
@@ -516,7 +531,7 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                                         className="w-4 h-4"
                                     />
                                     <span className="text-sm font-medium">
-                                        {t('materialsTab.schedulePublish')}
+                                        {t("materialsTab.schedulePublish")}
                                     </span>
                                 </label>
                             </div>
@@ -540,11 +555,11 @@ export default function MaterialsTab({ sectionId }: { sectionId: string }) {
                             variant="outline"
                             onClick={() => setUploadDialog(false)}
                             className="h-11 px-6">
-                            {t('common.cancel')}
+                            {t("common.cancel")}
                         </Button>
                         <Button onClick={uploadMaterial} className="h-11 px-6">
                             <Upload className="w-4 h-4 ml-2" />
-                            {t('materialsTab.upload')}
+                            {t("materialsTab.upload")}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
