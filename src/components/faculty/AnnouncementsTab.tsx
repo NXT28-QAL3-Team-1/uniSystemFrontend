@@ -44,7 +44,7 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
 
     const createAnnouncement = () => {
         if (!newAnnouncement.title || !newAnnouncement.content) {
-            toast.error(t('announcementsTab.errors.enterTitleContent'));
+            toast.error(t("announcementsTab.errors.enterTitleContent"));
             return;
         }
 
@@ -62,21 +62,23 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
             sendNotification: true,
             sendEmail: true,
         });
-        toast.success(t('announcementsTab.success.announcementPublished'));
+        toast.success(t("announcementsTab.success.announcementPublished"));
     };
 
     const deleteAnnouncement = (id: string) => {
         setAnnouncements(announcements.filter((a) => a.id !== id));
-        toast.success(t('announcementsTab.success.announcementDeleted'));
+        toast.success(t("announcementsTab.success.announcementDeleted"));
     };
 
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold">الإعلانات</h3>
+                <h3 className="text-lg font-semibold">
+                    {t("announcementsTab.title")}
+                </h3>
                 <Button onClick={() => setDialogOpen(true)}>
                     <Plus className="w-4 h-4 ml-2" />
-                    إعلان جديد
+                    {t("announcementsTab.newAnnouncement")}
                 </Button>
             </div>
 
@@ -84,7 +86,7 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
                 {announcements.length === 0 ? (
                     <Card>
                         <CardContent className="p-12 text-center text-gray-500">
-                            لم يتم نشر أي إعلانات بعد
+                            {t("announcementsTab.noAnnouncements")}
                         </CardContent>
                     </Card>
                 ) : (
@@ -95,7 +97,9 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
                                     <div className="flex items-center gap-3">
                                         <MessageSquare className="w-5 h-5 text-blue-500" />
                                         <div>
-                                            <CardTitle className="text-lg">{announcement.title}</CardTitle>
+                                            <CardTitle className="text-lg">
+                                                {announcement.title}
+                                            </CardTitle>
                                             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                                                 📅 {announcement.date}
                                             </p>
@@ -104,8 +108,9 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
                                     <Button
                                         variant="ghost"
                                         size="sm"
-                                        onClick={() => deleteAnnouncement(announcement.id)}
-                                    >
+                                        onClick={() =>
+                                            deleteAnnouncement(announcement.id)
+                                        }>
                                         <Trash2 className="w-4 h-4 text-red-500" />
                                     </Button>
                                 </div>
@@ -118,13 +123,13 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
                                     {announcement.sendNotification && (
                                         <div className="flex items-center gap-1">
                                             <Bell className="w-4 h-4" />
-                                            إرسال إشعار في النظام
+                                            {t("announcementsTab.inSystem")}
                                         </div>
                                     )}
                                     {announcement.sendEmail && (
                                         <div className="flex items-center gap-1">
                                             <Mail className="w-4 h-4" />
-                                            إرسال بريد إلكتروني
+                                            {t("announcementsTab.email")}
                                         </div>
                                     )}
                                 </div>
@@ -138,47 +143,69 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader className="pb-4">
-                        <DialogTitle className="text-xl font-bold">إعلان جديد</DialogTitle>
+                        <DialogTitle className="text-xl font-bold">
+                            {t("announcementsTab.createAnnouncement")}
+                        </DialogTitle>
                     </DialogHeader>
-                    <div className="space-y-6">
+                    <div className="space-y-6 m-4">
                         <div className="space-y-2">
-                            <Label className="text-sm font-semibold">العنوان</Label>
+                            <Label className="text-sm font-semibold">
+                                {t("announcementsTab.announcementTitle")}
+                            </Label>
                             <Input
                                 value={newAnnouncement.title}
                                 onChange={(e) =>
-                                    setNewAnnouncement({ ...newAnnouncement, title: e.target.value })
+                                    setNewAnnouncement({
+                                        ...newAnnouncement,
+                                        title: e.target.value,
+                                    })
                                 }
-                                placeholder="أدخل العنوان"
+                                placeholder={t(
+                                    "announcementsTab.announcementTitle"
+                                )}
                                 className="h-11"
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-sm font-semibold">المحتوى</Label>
+                            <Label className="text-sm font-semibold">
+                                {t("announcementsTab.content")}
+                            </Label>
                             <Textarea
                                 value={newAnnouncement.content}
                                 onChange={(e) =>
-                                    setNewAnnouncement({ ...newAnnouncement, content: e.target.value })
+                                    setNewAnnouncement({
+                                        ...newAnnouncement,
+                                        content: e.target.value,
+                                    })
                                 }
-                                placeholder="اكتب المحتوى هنا..."
+                                placeholder={t("announcementsTab.content")}
                                 rows={8}
                                 className="resize-none"
                             />
                         </div>
                         <div className="space-y-3">
-                            <Label className="text-sm font-semibold">🔔 إرسال إشعار:</Label>
+                            <Label className="text-sm font-semibold">
+                                🔔 {t("announcementsTab.sendNotification")}:
+                            </Label>
                             <div className="space-y-3">
                                 <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                                     <Checkbox
-                                        checked={newAnnouncement.sendNotification}
+                                        checked={
+                                            newAnnouncement.sendNotification
+                                        }
                                         onCheckedChange={(checked) =>
-                                            setNewAnnouncement({...newAnnouncement,
-                                                sendNotification: checked as boolean,
+                                            setNewAnnouncement({
+                                                ...newAnnouncement,
+                                                sendNotification:
+                                                    checked as boolean,
                                             })
                                         }
                                         id="notification"
                                     />
-                                    <label htmlFor="notification" className="text-sm font-medium cursor-pointer flex-1">
-                                        إرسال إشعار في النظام
+                                    <label
+                                        htmlFor="notification"
+                                        className="text-sm font-medium cursor-pointer flex-1">
+                                        {t("announcementsTab.sendNotification")}
                                     </label>
                                 </div>
                                 <div className="flex items-center gap-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
@@ -192,20 +219,27 @@ export default function AnnouncementsTab({ sectionId }: { sectionId: string }) {
                                         }
                                         id="email"
                                     />
-                                    <label htmlFor="email" className="text-sm font-medium cursor-pointer flex-1">
-                                        إرسال بريد إلكتروني
+                                    <label
+                                        htmlFor="email"
+                                        className="text-sm font-medium cursor-pointer flex-1">
+                                        {t("announcementsTab.sendEmail")}
                                     </label>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <DialogFooter className="gap-2 pt-4">
-                        <Button variant="outline" onClick={() => setDialogOpen(false)} className="h-11 px-6">
-                            إلغاء
+                        <Button
+                            variant="outline"
+                            onClick={() => setDialogOpen(false)}
+                            className="h-11 px-6">
+                            {t("common.cancel")}
                         </Button>
-                        <Button onClick={createAnnouncement} className="h-11 px-6">
+                        <Button
+                            onClick={createAnnouncement}
+                            className="h-11 px-6">
                             <MessageSquare className="w-4 h-4 ml-2" />
-                            نشر
+                            {t("announcementsTab.publish")}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
